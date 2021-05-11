@@ -1,0 +1,10 @@
+* TODOs
+
+1. Extend so that it only emits warnings for skipped actions.
+   Also create an option for the next call to be immediate if
+   skipped.
+
+2. Integrate with my =service= utils, and replace =systemd.timer=.
+
+3. Better documentation. In particular, teaches the user how to
+   express cron expressions like "*/5 7 12 * *" in this package.
