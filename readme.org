@@ -1,8 +1,8 @@
 * Clon: A cron-like scheduling library
 
-Clon is a cron-like scheduling library in common-lisp. It allows
-making a stateless =schedule=, and from it creating a stateful
-=scheduler=.
+Clon is a cron-like scheduling library in common-lisp. It
+subsumes and replaces traditional cron managers thanks to richer
+expressiveness of Lisp.
 
 Thanks to the expressiveness of clon, it subsumes what a
 traditional cron manager can do. In particular, in an example
@@ -17,6 +17,9 @@ Long story short, it can be expressed as the following.
  :month 7
  :day-of-week '(integer 0 1))
 #+end_src
+
+Related projects are [[https://github.com/tsikov/clerk][tsikov's clerk]] and [[https://github.com/ciel-lang/cl-cron/blob/master/cl-cron.lisp][ciel-lang's cl-cron]].
+However, to my best knowledge clon is more comprehensive.
 
 ** Examples
 
