@@ -8,6 +8,7 @@
    #:next-time
    #:make-scheduler
    #:schedule-function
+   #:new/schedule-function
    ;; Cron
    #:cron-schedule
    #:make-cron-schedule
