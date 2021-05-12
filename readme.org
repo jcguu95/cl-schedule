@@ -48,7 +48,7 @@ it generates. We use the common-lisp system =local-time=.
       (setf next-time (next-time schedule :init-time next-time)))))
 #+end_src
 
-#+begin_quote
+#+begin_src
 : @2050-05-27T08:36:29.000000+05:00
 : @2050-05-27T08:36:59.000000+05:00
 : @2050-05-27T08:38:29.000000+05:00
@@ -69,7 +69,7 @@ it generates. We use the common-lisp system =local-time=.
 : @2050-06-27T08:40:59.000000+05:00
 : @2050-06-27T15:36:29.000000+05:00
 : @2050-06-27T15:36:59.000000+05:00
-#+end_quote
+#+end_src
 
 *** 3. Traditional cron-expression in CLON
 
@@ -94,7 +94,7 @@ validity.
       (setf next-time (next-time schedule :init-time next-time)))))
 #+end_src
 
-#+begin_quote
+#+begin_src
 : @2021-07-05T05:00:00.000000+05:00
 : @2021-07-05T05:25:00.000000+05:00
 : @2021-07-05T05:50:00.000000+05:00
@@ -125,7 +125,7 @@ validity.
 : @2021-07-13T05:00:00.000000+05:00
 : @2021-07-13T05:25:00.000000+05:00
 : @2021-07-13T05:50:00.000000+05:00
-#+end_quote
+#+end_src
 
 *** 4.
 
