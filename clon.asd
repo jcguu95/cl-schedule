@@ -9,7 +9,6 @@
   :version "0.0.2"
   :components ((:module "src"
                 :components ((:file "package")
-                             (:file "-clon")
                              (:file "clon"))))
   :serial t
   :depends-on (:bordeaux-threads :trivial-timers))
