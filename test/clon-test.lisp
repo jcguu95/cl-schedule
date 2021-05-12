@@ -5,10 +5,10 @@
 
 (defun test-next-time ()
   (let ((now '(15 30 3 23 5 1974)))
-    (flet ((foo (spec result &key (now now) allow)
+    (flet ((foo (spec result &key (init-time init-time) allow)
              (let ((r (next-time spec
                                  :allow-now-p allow
-                                 :now (clon::encode-universal-time* now))))
+                                 :init-time (clon::encode-universal-time* now))))
                (assert (or (and (null r) (null result))
                            (equal result
                                   (subseq (clon::decode-universal-time* r)
@@ -44,17 +44,17 @@
       ;; Hour 3 -> hour 2 -> hour overflow -> day overflow -> month
       ;; overflow -> year overflow.
       (foo (make-cron-schedule :hour 2 :month 5) '(0 0 2 1 5 1975)
-           :now '(15 30 3 31 5 1974))
+           :init-time '(15 30 3 31 5 1974))
       ;; Maximum overflow.
       (foo (make-cron-schedule :second 0) '(0 0 0 1 1 1975)
-           :now '(1 59 23 31 12 1974))
+           :init-time '(1 59 23 31 12 1974))
       ;; Thursday -> Saturday
       (foo (make-cron-schedule :day-of-week 5) '(0 0 0 25 5 1974))
       ;; Thursday -> Wednesday
       (foo (make-cron-schedule :day-of-week 2) '(0 0 0 29 5 1974))
       ;; February doesn't have 31 days.
       (foo (make-cron-schedule :day-of-month 31) '(0 0 0 31 3 1974)
-           :now '(15 30 3 20 2 1974))
+           :init-time '(15 30 3 20 2 1974))
       ;; So this never happens:
       (foo (make-cron-schedule :day-of-month 31 :month 2) nil)
       ;; Simple function bumpers.
@@ -69,10 +69,10 @@
                     :second (make-typed-cron-bumper '(member 0 15 30 45))
                     :minute (make-typed-cron-bumper '(and (integer 10 40)
                                                       (satisfies evenp))))))
-        (foo hairy '(15 30 3 31 5 1974) :now '(15 30 3 31 5 1974) :allow t)
-        (foo hairy '(30 30 3 31 5 1974) :now '(15 30 3 31 5 1974))
-        (foo hairy '(15 30 3 31 5 1974) :now '(13 30 3 31 5 1974))
-        (foo hairy '(0 32 3 31 5 1974) :now '(48 30 3 31 5 1974))))))
+        (foo hairy '(15 30 3 31 5 1974) :init-time '(15 30 3 31 5 1974) :allow t)
+        (foo hairy '(30 30 3 31 5 1974) :init-time '(15 30 3 31 5 1974))
+        (foo hairy '(15 30 3 31 5 1974) :init-time '(13 30 3 31 5 1974))
+        (foo hairy '(0 32 3 31 5 1974) :init-time '(48 30 3 31 5 1974))))))
 
 (defun test-clon ()
   (test-next-time))
