@@ -112,8 +112,7 @@ Unschedule all timers.
    skipped.
 
 2. [ ] Better documentation. In particular, teaches the user how
-   to express cron expressions like "*/5 7 12 * *" in this
-   package.
+   to express cron expressions like =*/5 7 12 * *= in this package.
 
-3. [ ] Integrate with my =service= utils, and replace
+3. [ ] Integrate with jin's =service= utilities, and replace
    =systemd.timer=.
