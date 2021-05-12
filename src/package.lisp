@@ -15,3 +15,7 @@
    #:make-typed-cron-schedule
    #:find-decoded-time-component-by-type
    #:make-typed-cron-bumper))
+
+(cl:defpackage :clon-test
+  (:use #:common-lisp #:clon)
+  (:export #:test-clon))
