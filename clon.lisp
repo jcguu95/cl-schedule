@@ -6,22 +6,23 @@
   (encode-universal-time 0 0 0 1 1 3000)
   "The default time limit for NEXT-TIME searches.")
 
-(defgeneric next-time (schedule &key now allow-now-p limit)
-  (:documentation "Return the next time according to SCHEDULE or NIL
-if there is no next time. If ALLOW-NOW-P the earliest possible time to
-be returned is NOW, else it is usually NOW + the resolution of the
-schedule. The default value of NOW is (GET-UNIVERSAL-TIME),
-ALLOW-NOW-P is NIL and LIMIT is *DEFAULT-NEXT-TIME-LIMIT*"))
+(defgeneric next-time (schedule &key init-time allow-now-p limit)
+  (:documentation "Return the next time according to SCHEDULE or
+NIL if there is no next time. If ALLOW-NOW-P the earliest
+possible time to be returned is INIT-TIME, else it is usually
+INIT-TIME + the resolution of the schedule. The default value of
+INIT-TIME is (GET-UNIVERSAL-TIME), ALLOW-NOW-P is NIL and LIMIT
+is *DEFAULT-NEXT-TIME-LIMIT*"))
 
-(defun make-scheduler (schedule &key (now (get-universal-time))
+(defun make-scheduler (schedule &key (init-time (get-universal-time))
                        allow-now-p (limit *default-next-time-limit*))
   "Return a `scheduler' function of no arguments that returns times
-from NOW on by repeatedly calling NEXT-TIME on SCHEDULE. ALLOW-NOW-P
+from init-time on by repeatedly calling NEXT-TIME on SCHEDULE. ALLOW-NOW-P
 is passed to the first invocation of NEXT-TIME."
   (lambda ()
     (prog1
-        (setf now (next-time schedule :now now :allow-now-p allow-now-p
-                             :limit limit))
+        (setf init-time (next-time schedule :init-time init-time :allow-now-p allow-now-p
+                                            :limit limit))
       (setf allow-now-p nil))))
 
 (defun schedule-function (function scheduler &key name
@@ -253,21 +254,21 @@ it as a universal time."
                         (lowest-component-index-with-a-bumper
                          bumpers)))))
 
-(defmethod next-time ((schedule cron-schedule) &key (now (get-universal-time))
-                      allow-now-p (limit *default-next-time-limit*))
+(defmethod next-time ((schedule cron-schedule) &key (init-time (get-universal-time))
+                                                 allow-now-p (limit *default-next-time-limit*))
   (let ((bumpers (bumpers schedule)))
     (unless allow-now-p
-      (setf now (bump-lowest-component bumpers now)))
-    (loop while (< now limit)
+      (setf init-time (bump-lowest-component bumpers init-time)))
+    (loop while (< init-time limit)
           with n = 5
-          for decoded-time = (decode-universal-time* now)
+          for decoded-time = (decode-universal-time* init-time)
           for next = (if (= n 3)
                          (bump-day-of-month-and-day-of-week (elt bumpers 3)
                                                             (elt bumpers 6)
                                                             decoded-time)
                          (next-bump (elt bumpers n) decoded-time n))
           do
-          (cond ((null next)
+             (cond ((null next)
                  (when (= n 5)
                    ;; The desired year is in the past, there is no next
                    ;; time.
@@ -281,9 +282,9 @@ it as a universal time."
                    (setf (elt decoded-time n) next)
                    (zero-decoded-time-below decoded-time n))
                  (decf n)))
-          (setf now (encode-universal-time* decoded-time))
+          (setf init-time (encode-universal-time* decoded-time))
           (when (minusp n)
-            (return now)))))
+            (return init-time)))))
 
 
 ;;;; The convenience case: typed cron schedule
