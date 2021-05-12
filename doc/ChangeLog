@@ -1,3 +1,20 @@
+2021-05-12  Jin-Cheng Guu  <jcguu95@gmail.com>
+
+	* released v0.0.3
+
+	  1. The function #'schedule-function is extended. In this new
+	version, it can choose to ignore all skipped jobs if any, and emit
+	warnings.
+
+	  2. The symbol 'now in the file clon.lisp is replaced by
+	'init-time, which better describes its place. This breaks backward
+	compatibility in user space mildly.
+
+  	  3. Files are organized in a more modern and hierarchical way.
+
+          4. A descriptive doc and more examples are given. In particular,
+	it shows how clon is able to replace traditional cron managers.
+
 2007-01-23  Gabor Melis  <mega@retes.hu>
 
 	* released v0.0.1
