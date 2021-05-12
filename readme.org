@@ -220,5 +220,8 @@ Unschedule all timers.
 2. [X] Better documentation. In particular, teaches the user how
    to express cron expressions like =*/5 7 12 * *= in this package.
 
-3. [ ] Integrate with jin's =service= utilities, and replace
+3. Document =new/schedule-function= and merge it into
+   =schedule-function=, without breaking backward compatibility.
+
+4. [ ] Integrate with jin's =service= utilities, and replace
    =systemd.timer=.
