@@ -3,6 +3,9 @@
   #+sbcl
   (:import-from :sb-impl #:leap-years-before)
   (:export
+   ;; Useful macros for users
+   #:schedule-lambda
+   #:dry-run
    ;; Generic interface
    #:*default-next-time-limit*
    #:next-time

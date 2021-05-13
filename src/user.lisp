@@ -22,13 +22,13 @@
                         :ignore-skipped t
                         :thread t)))
 
-(defmacro dry-run (n &key time)
-  "Dry-run N times for the schedule defined by the schedule
-definition TIME."
+(defmacro dry-run (n &optional schedule-definition)
+  "Dry-run N times for the schedule defined by the
+SCHEDULE-DEFINITION."
   ;; basic example
   ;;
-  ;; (dry-run 8 :time (:day-of-wek '(member 0 1 2)))
-  `(let ((schedule (make-typed-cron-schedule ,@time)))
+  ;; (dry-run 8 (:day-of-week '(member 0 1 2)))
+  `(let ((schedule (make-typed-cron-schedule ,@schedule-definition)))
      (let ((next-time (next-time schedule)))
        (dotimes (x ,n)
          (format t "~s~%" (local-time:universal-to-timestamp next-time))

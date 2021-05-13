@@ -6,13 +6,13 @@
   :author ("Gábor Melis <mega@retes.hu>"
            "Jin-Cheng Guu <jcguu95@gmail.com>")
   :license "MIT"
-  :version "0.0.3"
+  :version "0.0.4"
   :components ((:module "src"
                 :components ((:file "package")
                              (:file "user")
                              (:file "clon"))))
   :serial t
-  :depends-on (:bordeaux-threads :trivial-timers))
+  :depends-on (:bordeaux-threads :trivial-timers :local-time))
 
 (defsystem :clon-test
   :depends-on (#:clon)
