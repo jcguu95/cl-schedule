@@ -22,6 +22,10 @@ the following. More examples to come!
         :day-of-week '(integer 0 2)))
 #+end_src
 
+[[http://clhs.lisp.se/Body/04_bc.htm][Common Lisp's type specifiers]] are used as the DSL to specify the
+time slot. This enables the user to control the time-spec with
+freedom [[https://cl-su-ai.cddddr.org/msg01196.html][(1)]].
+
 Notice that you can dry-run the schedule (see below) to inspect
 the time of the upcoming events. Also notice that in order to
 respect the convention of =#'decode-universal-time=, =(0 1 2 3 4 5
