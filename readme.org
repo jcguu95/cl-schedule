@@ -35,22 +35,6 @@ seconds, call the following.
  :time (:second '(member 0 10 20 30 40 50)))
 #+end_src
 
-Here, =schedule-lambda= is a macro that expands the form into the
-following.
-
-#+begin_src common-lisp :eval never
-(let* (;; create a stateless schedule
-       (schedule (make-typed-cron-schedule
-                  :second '(member 0 10 20 30 40 50)))
-       ;; create a scheduler that remembers the last scheduled time
-       (scheduler (make-scheduler schedule)))
-  ;; schedule a function as a timer
-  ;; this returns a timer object
-  (schedule-function (lambda ()
-                       (print (get-universal-time)))
-                     scheduler))
-#+end_src
-
 Unschedule the timer(s).
 
 #+begin_src common-lisp :eval never
@@ -81,6 +65,8 @@ traditional cron managers.
 #+end_src
 
 #+begin_src text
+;;; Run in 2021 May.
+
 @2021-07-05T05:00:00.000000+08:00 ;; Monday
 @2021-07-05T05:25:00.000000+08:00
 @2021-07-05T05:50:00.000000+08:00
@@ -112,18 +98,3 @@ traditional cron managers.
 @2021-07-12T05:25:00.000000+08:00
 @2021-07-12T05:50:00.000000+08:00
 #+end_src
-
-** TODOs [3/4]
-
-1. [X] Extend so that it only emits warnings for skipped actions.
-   Also create an option for the next call to be immediate if
-   skipped.
-
-2. [X] Better documentation. In particular, teaches the user how
-   to express cron expressions like =*/5 7 12 * *= in this package.
-
-3. [X] Document =new/schedule-function= and merge it into
-   =schedule-function=, without breaking backward compatibility.
-
-4. [ ] Integrate with jin's =service= utilities, and replace
-   =systemd.timer=.
