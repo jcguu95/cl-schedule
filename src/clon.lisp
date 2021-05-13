@@ -187,6 +187,10 @@ DAY-OF-WEEK bumpers. This function rolls the two bumpers into one."
   ;; the same day of week) then NEXT is the result. Else skip to the
   ;; day of week it said or next Monday for NIL if it is still in the
   ;; same month. Repeat.
+  ;;
+  ;; To respect the convention of #'decode-universal-time, (0 1 2
+  ;; 3 4 5 6) means (Mon Tue Wed Thu Fri Sat Sun). In particular
+  ;; means (Mon Tue Wed).
   (let* ((decoded-time (copy-list decoded-time))
          (last-day-of-month (days-of-month decoded-time)))
     (flet ((skip-days (n)
@@ -194,19 +198,19 @@ DAY-OF-WEEK bumpers. This function rolls the two bumpers into one."
              ;; Keep DECODED-TIME consistent, update DAY-OF-WEEK.
              (setf (elt decoded-time 6) (mod (+ (elt decoded-time 6) n) 7))))
       (loop while (<= (elt decoded-time 3) last-day-of-month) do
-            (let* ((current-dom (elt decoded-time 3))
-                   (next-dom (next-bump dom-bumper decoded-time 3)))
-              (unless next-dom
-                (return nil))
-              (skip-days (- next-dom current-dom))
-              (assert (<= next-dom last-day-of-month)))
-            (let* ((current-dow (elt decoded-time 6))
-                   (next-dow (next-bump dow-bumper decoded-time 6)))
-              ;; See if the dom is also a blessed dow.
-              (when (eql next-dow current-dow)
-                (return (elt decoded-time 3)))
-              ;; Skip until the prescribed day or next Monday.
-              (skip-days (- (or next-dow 7) current-dow)))))))
+        (let* ((current-dom (elt decoded-time 3))
+               (next-dom (next-bump dom-bumper decoded-time 3)))
+          (unless next-dom
+            (return nil))
+          (skip-days (- next-dom current-dom))
+          (assert (<= next-dom last-day-of-month)))
+        (let* ((current-dow (elt decoded-time 6))
+               (next-dow (next-bump dow-bumper decoded-time 6)))
+          ;; See if the dom is also a blessed dow.
+          (when (eql next-dow current-dow)
+            (return (elt decoded-time 3)))
+          ;; Skip until the prescribed day or next Monday.
+          (skip-days (- (or next-dow 7) current-dow)))))))
 
 (defclass cron-schedule ()
   ((bumpers :initarg :bumpers :reader bumpers

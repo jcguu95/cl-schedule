@@ -19,7 +19,11 @@ the following. More examples come afterward.
  :time (:minute '(satisfies m-of-25-p)
         :hour '(or (integer 5 6) (member 10))
         :month 7
-        :day-of-week '(integer 0 2) ; (0 1 2) means (Mon Tue Wed)
+        :day-of-week '(integer 0 2)
+                ;; To respect the convention of
+                ;; #'decode-universal-time, (0 1 2 3 4 5 6) means
+                ;; (Mon Tue Wed Thu Fri Sat Sun). In particular,
+                ;; (0 1 2) means (Mon Tue Wed).
                 ))
 #+end_src
 
@@ -47,7 +51,7 @@ Here are some easier examples.
          '("8pm on a Thursday")
          :output *standard-output*))
  :time (:hour 20
-        :day-of-week 3               ; 0 means Mon; 3 means Thu.
+        :day-of-week 3               ; 0 means Mon, 3 means Thu, and 6 means Sun.
               ))
 #+end_src
 
