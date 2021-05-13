@@ -23,7 +23,11 @@ the following
                 ))
 #+end_src
 
-Easier examples are as follows.
+** Examples
+
+*** Basic examples
+
+Here are some easier examples.
 
 #+begin_src common-lisp :eval never
 ;; 0 */2 * * * echo "Every two hours."
@@ -43,16 +47,16 @@ Easier examples are as follows.
          '("8pm on a Thursday")
          :output *standard-output*))
  :time (:hour 20
-        :day-of-week 3) ; 0 means Mon; 3 means Thu.
- )
+        :day-of-week 3               ; 0 means Mon; 3 means Thu.
+              ))
 #+end_src
 
-** Examples
+*** Finer than cron
 
-*** Basic example
-
-To make a thread that prints the universal time every ten
-seconds, call the macro =schedule-lambda= as follows.
+Clon is strictly finer than cron. In particular, the user can
+specify its behavior to each second. For example, to make a
+thread that prints the universal time every ten seconds, call the
+macro =schedule-lambda= as follows.
 
 #+begin_src common-lisp :eval never
 (schedule-lambda
@@ -61,12 +65,11 @@ seconds, call the macro =schedule-lambda= as follows.
  :time (:second '(member 0 10 20 30 40 50)))
 #+end_src
 
-Unschedule the timer(s).
+*** Unschedule the timers
+
+Unschedule all timers.
 
 #+begin_src common-lisp :eval never
-;; Unschedule the last timer.
-(trivial-timers:unschedule-timer *)
-;; Unschedule all timers.
 (mapc #'trivial-timers:unschedule-timer
       (trivial-timers:list-all-timers))
 #+end_src
