@@ -10,12 +10,12 @@ the following. More examples to come!
 
 #+begin_src common-lisp :eval never
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
+(defun echo (text) (sb-ext:run-program "/bin/echo" (list text)
+                                       :output *standard-output*))
+
 (schedule-lambda
  :name "Demo"
- :form ((sb-ext:run-program
-         "/bin/echo"
-         '("Hello, world!")
-         :output *standard-output*))
+ :form ((echo "Hello, world!"))
  :time (:minute '(satisfies m-of-25-p)
         :hour '(or (integer 5 6) (member 10))
         :month 7
@@ -42,22 +42,14 @@ Here are some easier examples.
 ;; 0 */2 * * * echo "Every two hours."
 (schedule-lambda
  :name "Demo"
- :form ((sb-ext:run-program
-         "/bin/echo"
-         '("Every two hours.")
-         :output *standard-output*))
+ :form ((echo "Every two hours."))
  :time (:hour '(satisfies evenp)))
 
 ;; 0 20 * * 4 echo "8pm on a Thursday."
 (schedule-lambda
  :name "Demo"
- :form ((sb-ext:run-program
-         "/bin/echo"
-         '("8pm on a Thursday")
-         :output *standard-output*))
- :time (:hour 20
-        :day-of-week 3               ; 0 means Mon, 3 means Thu, and 6 means Sun.
-              ))
+ :form ((echo "8pm on a Thursday."))
+ :time (:hour 20 :day-of-week 3))    ; 0 means Mon, 3 means Thu, and 6 means Sun.
 #+end_src
 
 *** Finer than cron
