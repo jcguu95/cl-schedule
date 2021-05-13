@@ -1,6 +1,6 @@
 ;;; This file include entry operators for the users.
 
-(in-package :clon)
+(in-package :cl-schedule)
 
 (defmacro schedule-lambda (&key name form time)
   ;; Basic example

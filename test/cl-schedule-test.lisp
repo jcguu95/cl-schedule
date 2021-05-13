@@ -1,4 +1,4 @@
-(in-package :clon-test)
+(in-package :cl-schedule-test)
 
 (defmacro assert-error (&body body)
   `(assert (nth-value 1 (ignore-errors (progn ,@body)))))
@@ -8,10 +8,10 @@
     (flet ((foo (spec result &key (init-time init-time) allow)
              (let ((r (next-time spec
                                  :allow-now-p allow
-                                 :init-time (clon::encode-universal-time* now))))
+                                 :init-time (cl-schedule::encode-universal-time* now))))
                (assert (or (and (null r) (null result))
                            (equal result
-                                  (subseq (clon::decode-universal-time* r)
+                                  (subseq (cl-schedule::decode-universal-time* r)
                                           0 6)))))))
       (assert-error (foo (make-cron-schedule) '(15 30 3 23 5 1974)))
       (foo (make-cron-schedule :second 14) '(14 31 3 23 5 1974) :allow t)
@@ -74,5 +74,5 @@
         (foo hairy '(15 30 3 31 5 1974) :init-time '(13 30 3 31 5 1974))
         (foo hairy '(0 32 3 31 5 1974) :init-time '(48 30 3 31 5 1974))))))
 
-(defun test-clon ()
+(defun test-cl-schedule ()
   (test-next-time))

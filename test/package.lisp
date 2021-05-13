@@ -1,3 +1,3 @@
-(cl:defpackage :clon-test
-  (:use #:common-lisp #:clon)
-  (:export #:test-clon))
+(cl:defpackage :cl-schedule-test
+  (:use #:common-lisp #:cl-schedule)
+  (:export #:test-cl-schedule))

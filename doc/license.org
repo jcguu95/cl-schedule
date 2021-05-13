@@ -31,7 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 * Jin-Cheng Guu
 
-Clon, a Common Lisp library for scheduling.
+=cl-schedule=, a scheduling library in CL.
 
 Copyright (c) 2021 Jin-Cheng Guu
 All rights reserved.

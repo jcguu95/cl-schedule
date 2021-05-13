@@ -1,7 +1,7 @@
-* Clon: A cron-like scheduling library
+* cl-schedule: a scheduling library in CL
 
-Clon is a cron-like scheduling library in common-lisp. It serves
-as a replacement of traditional cron managers.
+=cl-schedule= is a scheduling library in common-lisp. It serves as
+a replacement of traditional cron managers.
 
 Thanks to richer expressiveness of Lisp, it subsumes what a
 traditional cron manager can do. For example, the control string
@@ -54,8 +54,8 @@ Here are some easier examples.
 
 *** Finer than cron
 
-Clon is strictly finer than cron. In particular, the user can
-specify its behavior to each second. For example, to make a
+=cl-schedule= is strictly finer than cron. In particular, the user
+can specify its behavior to each second. For example, to make a
 thread that prints the universal time every ten seconds, call the
 macro =schedule-lambda= as follows.
 

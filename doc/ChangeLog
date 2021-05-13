@@ -1,3 +1,10 @@
+2021-05-14  Jin-Cheng Guu  <jcguu95@gmail.com>
+
+	* released v0.0.5
+
+	1. Change name from clon to cl-schedule, as there are many other
+	projects named clon already.
+
 2021-05-13  Jin-Cheng Guu  <jcguu95@gmail.com>
 
 	* released v0.0.4

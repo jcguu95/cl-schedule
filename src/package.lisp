@@ -1,4 +1,4 @@
-(cl:defpackage :clon
+(cl:defpackage :cl-schedule
   (:use #:common-lisp)
   #+sbcl
   (:import-from :sb-impl #:leap-years-before)
@@ -17,7 +17,3 @@
    #:make-typed-cron-schedule
    #:find-decoded-time-component-by-type
    #:make-typed-cron-bumper))
-
-(cl:defpackage :clon-test
-  (:use #:common-lisp #:clon)
-  (:export #:test-clon))

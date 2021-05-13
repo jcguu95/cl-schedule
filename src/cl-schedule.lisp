@@ -1,4 +1,4 @@
-(in-package :clon)
+(in-package :cl-schedule)
 
 ;;;; Generic interface
 

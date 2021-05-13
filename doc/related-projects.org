@@ -1,4 +1,7 @@
 * Related Projects
 
 Some related projects are [[https://github.com/tsikov/clerk][tsikov's clerk]] and [[https://github.com/ciel-lang/cl-cron/blob/master/cl-cron.lisp][ciel-lang's cl-cron]].
-However, to my best knowledge clon is more comprehensive.
+However, to my best knowledge =cl-schedule= is more comprehensive.
+
+There's also a related project =schedule= that seems great. We need
+to learn some idea from it ;)
