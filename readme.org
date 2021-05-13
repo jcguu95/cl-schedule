@@ -1,13 +1,12 @@
 * Clon: A cron-like scheduling library
 
 Clon is a cron-like scheduling library in common-lisp. It
-subsumes and replaces traditional cron managers thanks to richer
-expressiveness of Lisp.
+aims to replace traditional cron managers.
 
-In particular, in an example below we show how to make a =schedule=
-that does what a traditional cron manager would do for the
-control string =*/25 5-6,10 * 7 1-2=. Long story short, it can be
-expressed as the following schedule-definition.
+Thanks to richer expressiveness of Lisp, it subsumes what a
+traditional cron manager can do. For example, the control string
+=*/25 5-6,10 * 7 1-2= can be expressed as the following
+schedule-definition.
 
 #+begin_src common-lisp :eval never
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
@@ -18,15 +17,12 @@ expressed as the following schedule-definition.
  :day-of-week '(integer 0 1))
 #+end_src
 
-Related projects are [[https://github.com/tsikov/clerk][tsikov's clerk]] and [[https://github.com/ciel-lang/cl-cron/blob/master/cl-cron.lisp][ciel-lang's cl-cron]].
-However, to my best knowledge clon is more comprehensive.
-
 ** Examples
 
 *** Basic example
 
 To make a thread that prints the universal time every ten
-seconds, call the following.
+seconds, call the macro =schedule-lambda= as follows.
 
 #+begin_src common-lisp :eval never
 (schedule-lambda
@@ -49,10 +45,11 @@ Unschedule the timer(s).
 
 It is helpful to inspect the time of the upcoming events. To do
 this, we can use the macro =dry-run= to list the time of the
-upcoming events. Here is an example that displays the time of the
-upcoming events with a complicated schedule. Notice that the
-schedule-definition is equivalent to =*/25 5-6,10 * 7 1-3= in
-traditional cron managers.
+upcoming events. Here is an example that displays for a
+complicated schedule.
+
+(Notice that the schedule-definition is equivalent to the control
+string =*/25 5-6,10 * 7 1-3= in traditional cron managers.)
 
 #+begin_src common-lisp :eval never
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
@@ -64,9 +61,10 @@ traditional cron managers.
          ))
 #+end_src
 
-#+begin_src text
-;;; Run in 2021 May.
+This prints the following to =*standard-output*=.
 
+#+begin_src text
+;; Ran in May 2021.
 @2021-07-05T05:00:00.000000+08:00 ;; Monday
 @2021-07-05T05:25:00.000000+08:00
 @2021-07-05T05:50:00.000000+08:00
@@ -98,3 +96,8 @@ traditional cron managers.
 @2021-07-12T05:25:00.000000+08:00
 @2021-07-12T05:50:00.000000+08:00
 #+end_src
+
+** Related Projects
+
+Some related projects are [[https://github.com/tsikov/clerk][tsikov's clerk]] and [[https://github.com/ciel-lang/cl-cron/blob/master/cl-cron.lisp][ciel-lang's cl-cron]].
+However, to my best knowledge clon is more comprehensive.
