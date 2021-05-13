@@ -1,20 +1,27 @@
 * Clon: A cron-like scheduling library
 
-Clon is a cron-like scheduling library in common-lisp. It
-aims to replace traditional cron managers.
+Clon is a cron-like scheduling library in common-lisp. It serves
+as a replacement of traditional cron managers.
 
 Thanks to richer expressiveness of Lisp, it subsumes what a
 traditional cron manager can do. For example, the control string
-=*/25 5-6,10 * 7 1-2= can be expressed as the following
-schedule-definition.
+
+=*/25 5-6,10 * 7 1-2 /bin/echo Hello, world!=
+
+can be expressed as the following
 
 #+begin_src common-lisp :eval never
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
-(make-typed-cron-schedule
- :minute '(satisfies m-of-25-p)
- :hour '(or (integer 5 6) (member 10))
- :month 7
- :day-of-week '(integer 0 1))
+(schedule-lambda
+ :name "Demo"
+ :form ((sb-ext:run-program
+         "/bin/echo"
+         '("Hello, world!")
+         :output *standard-output*))
+ :time (:minute '(satisfies m-of-25-p)
+        :hour '(or (integer 5 6) (member 10))
+        :month 7
+        :day-of-week '(integer 0 1)))
 #+end_src
 
 ** Examples
