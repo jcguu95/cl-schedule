@@ -28,8 +28,9 @@ SCHEDULE-DEFINITION."
   ;; basic example
   ;;
   ;; (dry-run 8 (:day-of-week '(member 0 1 2)))
-  `(let ((schedule (make-typed-cron-schedule ,@schedule-definition)))
-     (let ((next-time (next-time schedule)))
-       (dotimes (x ,n)
-         (format t "~s~%" (local-time:universal-to-timestamp next-time))
-         (setf next-time (next-time schedule :init-time next-time))))))
+  (let ((x (gensym)))
+    `(let ((schedule (make-typed-cron-schedule ,@schedule-definition)))
+       (let ((next-time (next-time schedule)))
+         (dotimes (,x ,n)
+           (format t "~s~%" (local-time:universal-to-timestamp next-time))
+           (setf next-time (next-time schedule :init-time next-time)))))))
