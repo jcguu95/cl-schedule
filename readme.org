@@ -136,7 +136,9 @@ This prints the following to =*standard-output*=.
 *** cron syntax
 
 Support cron syntax directly. See =./scr/cron-to-lisp.lisp= for a
-detailed plan.
+detailed plan. Hopefully this will let =cl-schedule= to
+(lisp-expressively) replace [[https://github.com/endsec/scheduler][scheduler]] completely (modulo the
+randomness supported there).
 
 *** integration with service
 
