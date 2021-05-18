@@ -14,7 +14,10 @@
 ;;    (("*" . 1)))
 ;;
 ;; So far, we call for example ("5-8" . 3) a term, in which "5-8"
-;; is called the specification and 3 is called the step.
+;; is called the specification and 3 is called the step. The
+;; specification must be either "*", "n-m" where n < m are
+;; nonnegative integers, or "+[0-9*]". The step must be positive
+;; integer; it is set to 1 if unspecified.
 ;;
 ;; We will write a magic function that translates a term into a
 ;; lisp expression (ingredient: init, step, a filter function).
