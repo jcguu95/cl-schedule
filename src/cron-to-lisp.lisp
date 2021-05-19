@@ -42,6 +42,10 @@
 ;;    :day-in-month ("*" . 7)
 ;;    :month        ("*" . 1)
 ;;    :day-in-week  ("*" . 1))
+;;
+;; And it should turn ("5-12" . 3) to something like (5 8 11).
+;; And it should turn ("*" . 3) to something like (0 3 6 9 12 15 18 21 24 .. 60).
+;; And it should turn ("*7" . 3) to something like (7 37).
 
 ;; TODO Write tests.
 
@@ -129,24 +133,30 @@ given BLOCK. As an example,
               (step (read-from-string (car (cdr splitted)))))
           (unless (and (integerp step) (> step 0))
             (error "STEP must be a positive integer."))
-          (unless (%specification? specification)
+          (unless (specification-type specification)
             (error "SPECIFICATION must be a specification."))
           (cons specification step)))))
 
-(defun %specification? (string)
+(defun specification-type (string)
   "A specification is a string that is either \"*\", \"n-m\", or
   a string satisfying the regex \"^[0-9*]+$\", where n and m are
   nonnegative integers. For example, \"1\", \"5-8\", \"1*\" are
   all specifications.
 
-  This function returns whether STRING is a specification."
-  ;; (specification? "3-9")
-  ;; (specification? "3- 9")
-  ;; (specification? "3-9.5")
-  ;; (specification? "-3- 9")
-  ;; (specification? "10- 9")
-  (cond ((string= string "*")
-         (values t "TODO give a good name"))
+  This function returns the type of the STRING's specification as
+  a generalized boolean, or NIL if STRING is not a
+  specification."
+  ;; TODO write a test for these
+  ;; (specification-type "*")     ;; => 'all
+  ;; (specification-type "3")     ;; => 'singleton
+  ;; (specification-type "*3")    ;; => 'wildcard
+  ;; (specification-type "3-9")   ;; => 'interval
+  ;; (specification-type "9-3")   ;; => nil
+  ;; (specification-type "3- 9")  ;; => nil
+  ;; (specification-type "3-9.5") ;; => nil
+  ;; (specification-type "-3- 9") ;; => nil
+  ;; (specification-type "10- 9") ;; => nil
+  (cond ((string= string "*") 'all)
         ((when (cl-ppcre:all-matches "^[^-]*-[^-]*$" string)
            (let* ((splitted (cl-ppcre:split "-" string))
                   (a (car splitted))
@@ -156,18 +166,98 @@ given BLOCK. As an example,
              (and (cl-ppcre:all-matches "^[0-9]*$" a)
                   (cl-ppcre:all-matches "^[0-9]*$" b)
                   (integerp n) (integerp m) (<= 0 n m))))
-         (values t "TODO give a good name"))
-        ((cl-ppcre:all-matches "^[0-9*]+$" string)
-         (values t "TODO give a good name"))
+         'interval)
+        ((cl-ppcre:all-matches "^[0-9*]+$" string) 'wildcard)
         (t nil)))
 
 ;; TODO write a test:
 ;;
-;; (loop for block in (mapcar #'block->terms (control-string->blocks "* 1,3,5-8/3 */7"))
-;;                 collect (loop for term in block
-;;                               collect (term->cons term)))
+;; (loop for block in (control-string->blocks "* 1,3,5-8/3 */7")
+;;       collect (loop for term in (block->terms block)
+;;                     collect (term->cons term)))
 ;; ;; => ((("*" . 1))
 ;;        (("1" . 1) ("3" . 1) ("5-8" . 3))
 ;;        (("*" . 7))
 ;;        (("*" . 1))
 ;;        (("*" . 1)))
+
+(defun make-integer-sequence
+    (&optional (init 0) (step 1) (end 60) (regex "*"))
+  ;; (make-integer-sequence 15 7 60 "[1-3].") ;; => (15 22 29 36)
+  ;; (make-integer-sequence 15 7 60 "[13].")  ;; => (15 36)
+  ;; (make-integer-sequence 15 2 60 "3*")     ;; => (31 33 35 37 39)
+  (setf regex (concatenate 'string
+                           "^"
+                           (cl-ppcre:regex-replace-all
+                            "\\*" regex ".*")
+                           "$"))
+  (remove-if-not
+   (lambda (x) (cl-ppcre:all-matches
+                regex (format nil "~a" x)))
+   (when (<= init end)
+     (cons init (make-integer-sequence
+                 (+ init step) step end)))))
+
+(defun cons->integer-sequence (cons)
+  ;; (cons->integer-sequence (cons "3-20" 8)) ;; => (3 11 19)
+  ;; (cons->integer-sequence (cons "*" 8))    ;; => (0 8 16 24 32 40 48 56)
+  ;; (cons->integer-sequence (cons "*2" 6))   ;; => (12 42)
+  (let* ((specification (car cons))
+         (type (specification-type specification))
+         (step (cdr cons))
+         (n 0)
+         (m 60))
+    (when (eql type 'interval)
+      (let* ((splitted (cl-ppcre:split "-" specification)))
+        (setf n (read-from-string (car splitted)))
+        (setf m (read-from-string (car (cdr splitted))))
+        (setf specification "*")))
+    (values (make-integer-sequence n step m specification)
+            :n n :step step :m m :specification specification :type type)))
+
+(defun control-string->lispy-result (control-string)
+  "Main function of this file. It transforms a cron
+control-string into a lispy expression."
+  (let (result)
+    (setf result (loop for block in (control-string->blocks control-string)
+                       collect (loop for term in (block->terms block)
+                                     collect (term->cons term))))
+    (setf result
+          (loop for x in '(0 1 2 3 4)
+                collect (list (case x
+                                (0 :minute)
+                                (1 :hour)
+                                (2 :day-of-month)
+                                (3 :month)
+                                (4 :day-of-week))
+                              (let ((conss (nth x result)))
+                                (if (eql 1 (length conss))
+                                    (cons 'member (cons->integer-sequence (car conss)))
+                                    (cons 'or (loop for cons in conss
+                                                    collect (cons 'member (cons->integer-sequence cons))))))
+                              )))
+    (setf result (reduce #'append result))))
+
+;; TODO write a test
+;; (control-string->lispy-result "* 1,3,5-8/3 */7")
+;; =>
+;; (:MINUTE
+;;  (MEMBER 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
+;;          27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49
+;;          50 51 52 53 54 55 56 57 58 59 60)
+;;
+;;  :HOUR
+;;  (OR (MEMBER 1) (MEMBER 3) (MEMBER 5 8))
+;;
+;;  :DAY-OF-MONTH
+;;  (MEMBER 0 7 14 21 28 35 42 49 56)
+;;
+;;  :MONTH
+;;  (MEMBER 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
+;;          27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49
+;;          50 51 52 53 54 55 56 57 58 59 60)
+;;
+;;  :DAY-OF-WEEK
+;;  (MEMBER 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26
+;;          27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49
+;;          50 51 52 53 54 55 56 57 58 59 60))
