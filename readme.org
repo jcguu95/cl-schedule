@@ -152,11 +152,10 @@ alternative to =systemd.timer=.
 
 ** FAQ
 
-Q1: What does it do if the job doesn't finish by the time it's
-scheduled to run again?
+*** What does it do if the job doesn't finish by the time it's scheduled to run again?
 
-A1: In that case, =cl-schedule= simply fires that job again on
-time, regardless if the old process is still running.
+In that case, =cl-schedule= simply fires that job again on time,
+regardless if the old process is still running.
 
 If you do not like this behavior, you can alter the function for
 it to check if it has to evaluate its main body. For example,
