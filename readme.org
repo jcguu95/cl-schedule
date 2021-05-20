@@ -155,11 +155,9 @@ alternative to =systemd.timer=.
 *** What does it do if the job doesn't finish by the time it's scheduled to run again?
 
 In that case, =cl-schedule= simply fires that job again on time,
-regardless if the old process is still running.
-
-If you do not like this behavior, you can alter the function for
-it to check if it has to evaluate its main body. For example,
-instead of
+regardless if the old process is still running. If you do not
+like this behavior, you can alter the function for it to check if
+it has to evaluate its main body. For example, instead of
 
 #+begin_src common-lisp :eval never
 (schedule-lambda
@@ -168,7 +166,7 @@ instead of
  :time (:minute '(satisfies m-of-25-p)))
 #+end_src
 
-you can alter the `:FORM` slot
+you can alter the =:FORM= slot
 
 #+begin_src common-lisp :eval never
 (schedule-lambda
