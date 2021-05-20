@@ -149,3 +149,34 @@ run. The end result is a schedule in which an
 once-every-five-month task makes sense on a machine that shuts
 down every day. Hopefully, this will make =cl-schedule= as an
 alternative to =systemd.timer=.
+
+** FAQ
+
+Q1: What does it do if the job doesn't finish by the time it's
+scheduled to run again?
+
+A1: In that case, =cl-schedule= simply fires that job again on
+time, regardless if the old process is still running.
+
+If you do not like this behavior, you can alter the function for
+it to check if it has to evaluate its main body. For example,
+instead of
+
+#+begin_src common-lisp :eval never
+(schedule-lambda
+ :name "Demo"
+ :form ((echo "Hello, world!"))
+ :time (:minute '(satisfies m-of-25-p)))
+#+end_src
+
+you can alter the `:FORM` slot
+
+#+begin_src common-lisp :eval never
+(schedule-lambda
+ :name "Demo"
+ :form ((unless (still-running) (echo "Hello, world!")))
+ :time (:minute '(satisfies m-of-25-p)))
+#+end_src
+
+Notice that this is just a pseudo-code. The users should write
+=(still-running)= by themselves (this should not be hard).
