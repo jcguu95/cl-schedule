@@ -150,6 +150,11 @@ once-every-five-month task makes sense on a machine that shuts
 down every day. Hopefully, this will make =cl-schedule= as an
 alternative to =systemd.timer=.
 
+*** timer inspection
+
+Let the user inspect, pause, halt, restart the timers set by
+=cl-scheduler= in a more native way.
+
 ** FAQ
 
 *** What does it do if the job doesn't finish by the time it's scheduled to run again?
