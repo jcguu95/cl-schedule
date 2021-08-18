@@ -72,8 +72,7 @@ macro =schedule!= as follows.
 Unschedule all timers.
 
 #+begin_src common-lisp :eval never
-(mapc #'trivial-timers:unschedule-timer
-      (trivial-timers:list-all-timers))
+(mapc #'unschedule (all-schedules))
 #+end_src
 
 *** Dry-run a schedule
