@@ -10,8 +10,9 @@ the following. More examples to come!
 
 #+begin_src common-lisp :eval never
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
-(defun echo (text) (sb-ext:run-program "/bin/echo" (list text)
-                                       :output *standard-output*))
+(defun echo (text)
+  (uiop:run-program (format nil "echo ~a" text)
+                    :output *standard-output*))
 
 (schedule!
  :name "Demo"
