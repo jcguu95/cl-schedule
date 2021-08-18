@@ -151,8 +151,10 @@ alternative to =systemd.timer=.
 
 *** timer inspection
 
-Let the user inspect, pause, halt, restart the timers set by
-=cl-scheduler= in a more native way.
+Let the user interact with the schedule.
+
+1. Enable and disable the schedule.
+2. Inspect the form, time spec, the next time to be fired.
 
 ** FAQ
 
