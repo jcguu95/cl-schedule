@@ -13,7 +13,7 @@ the following. More examples to come!
 (defun echo (text) (sb-ext:run-program "/bin/echo" (list text)
                                        :output *standard-output*))
 
-(schedule-lambda
+(schedule!
  :name "Demo"
  :form ((echo "Hello, world!"))
  :time (:minute '(satisfies m-of-25-p)
@@ -40,13 +40,13 @@ Here are some easier examples.
 
 #+begin_src common-lisp :eval never
 ;; 0 */2 * * * echo "Every two hours."
-(schedule-lambda
+(schedule!
  :name "Demo"
  :form ((echo "Every two hours."))
  :time (:hour '(satisfies evenp)))
 
 ;; 0 20 * * 4 echo "8pm on a Thursday."
-(schedule-lambda
+(schedule!
  :name "Demo"
  :form ((echo "8pm on a Thursday."))
  :time (:hour 20 :day-of-week 3))    ; 0 means Mon, 3 means Thu, and 6 means Sun.
@@ -57,10 +57,10 @@ Here are some easier examples.
 =cl-schedule= is strictly finer than cron. In particular, the user
 can specify its behavior to each second. For example, to make a
 thread that prints the universal time every ten seconds, call the
-macro =schedule-lambda= as follows.
+macro =schedule!= as follows.
 
 #+begin_src common-lisp :eval never
-(schedule-lambda
+(schedule!
  :name "demo"
  :form ((print (get-universal-time)))
  :time (:second '(member 0 10 20 30 40 50)))
@@ -87,12 +87,11 @@ string =*/25 5-6,10 * 7 1-3= in traditional cron managers.)
 
 #+begin_src common-lisp :eval never
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
-(dry-run 30 ; display the next 30 instances
-         (:minute '(satisfies m-of-25-p)
-          :hour '(or (integer 5 6) (member 10))
-          :month 7
-          :day-of-week '(integer 0 2) ; (0 1 2) means (Mon Tue Wed)
-                  ))
+(let ((time-spec '(:minute (satisfies m-of-25-p)
+                   :hour (or (integer 5 6) (member 10)) ; 5~6 or 10
+                   :month 7
+                   :day-of-week (integer 0 2)))) ; (0 1 2) means (Mon Tue Wed)
+  (dry-run 30 time-spec)); display the next 30 instances
 #+end_src
 
 This prints the following to =*standard-output*=.
@@ -165,7 +164,7 @@ like this behavior, you can alter the function for it to check if
 it has to evaluate its main body. For example, instead of
 
 #+begin_src common-lisp :eval never
-(schedule-lambda
+(schedule!
  :name "Demo"
  :form ((echo "Hello, world!"))
  :time (:minute '(satisfies m-of-25-p)))
@@ -174,7 +173,7 @@ it has to evaluate its main body. For example, instead of
 you can alter the =:FORM= slot
 
 #+begin_src common-lisp :eval never
-(schedule-lambda
+(schedule!
  :name "Demo"
  :form ((unless (still-running) (echo "Hello, world!")))
  :time (:minute '(satisfies m-of-25-p)))

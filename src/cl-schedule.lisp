@@ -78,7 +78,7 @@ NIL for backward compatibility."
 (defun leap-years-before (year)
   (let ((years (- year 1901)))
     (+ (- (truncate years 4)
-	  (truncate years 100))
+          (truncate years 100))
        (truncate (+ years 300) 400))))
 
 (defun decode-universal-time* (time)

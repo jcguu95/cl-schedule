@@ -1,3 +1,10 @@
+2021-08-17  Jin-Cheng Guu  <jcguu95@gmail.com>
+
+	* released v0.0.6
+
+	1. Change `#'schedule-lambda` to `#'schedule!`.
+	2. Improve readme a little bit.
+
 2021-05-14  Jin-Cheng Guu  <jcguu95@gmail.com>
 
 	* released v0.0.5

@@ -2,10 +2,10 @@
 
 (in-package :cl-schedule)
 
-(defmacro schedule-lambda (&key name form time)
+(defmacro schedule! (&key name form time)
   ;; Basic example
   ;;
-  ;; (schedule-lambda
+  ;; (schedule!
   ;;  :name "demo"
   ;;  :form ((print (get-universal-time)))
   ;;  :time (:second '(member 0 10 20 30 40 50)))
