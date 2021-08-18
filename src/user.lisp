@@ -17,7 +17,7 @@
      ;; schedule a function as a timer
      (schedule-function (lambda () ,@form)
                         scheduler
-                        :name nil
+                        :name ,name
                         :immediate t
                         :ignore-skipped t
                         :thread t)))
