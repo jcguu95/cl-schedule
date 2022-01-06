@@ -33,6 +33,11 @@ respect the convention of =#'decode-universal-time=, =(0 1 2 3 4 5
 6)= means =(Mon Tue Wed Thu Fri Sat Sun)=. In particular, =(0 1 2)=
 means =(Mon Tue Wed)=.
 
+** Installation
+
+=cl-schedule= is on [[https://www.quicklisp.org/beta/][Quicklisp]]. To install and start using it,
+evaluate the form =(ql:quickload :cl-schedule)= in the repl.
+
 ** Examples
 
 *** Basic examples
