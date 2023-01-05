@@ -32,6 +32,9 @@ SCHEDULE-DEFINITION."
 ;; API with schedules
 ;; TODO Native inspection, pause.. etc.
 (defun all-schedules () *schedules*)
+
 (defun unschedule (schedule)
+  "Returns the same schedule object as given on input."
   (trivial-timers:unschedule-timer schedule)
-  (setf *schedules* (remove schedule *schedules*)))
+  (setf *schedules* (remove schedule *schedules*))
+  (values schedule))
