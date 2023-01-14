@@ -34,7 +34,7 @@ SCHEDULE-DEFINITION."
 (defun all-schedules () *schedules*)
 
 (defun unschedule (schedule)
-  "Returns the same schedule object as given on input."
+  "Unschedule SCHEDULE and return SCHEDULE as the primary value."
   (trivial-timers:unschedule-timer schedule)
   (setf *schedules* (remove schedule *schedules*))
-  (values schedule))
+  (values schedule *schedules*))
