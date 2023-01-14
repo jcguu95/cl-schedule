@@ -5,6 +5,8 @@
   (:export
    ;; Useful macros for users
    #:schedule!
+   #:unschedule
+   #:all-schedules
    #:dry-run
    ;; Generic interface
    #:*default-next-time-limit*
