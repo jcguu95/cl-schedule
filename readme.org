@@ -68,7 +68,7 @@ macro =schedule!= as follows.
 #+begin_src common-lisp :eval never
 (schedule!
  :name "demo"
- :form ((print (get-universal-time)))
+ :form ((print (get-universal-time)) (terpri))
  :time (:second '(member 0 10 20 30 40 50)))
 #+end_src
 
