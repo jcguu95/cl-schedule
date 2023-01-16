@@ -15,7 +15,7 @@ INIT-TIME is (GET-UNIVERSAL-TIME), ALLOW-NOW-P is NIL and LIMIT
 is *DEFAULT-NEXT-TIME-LIMIT*"))
 
 (defun make-scheduler (schedule &key (init-time (get-universal-time))
-                       allow-now-p (limit *default-next-time-limit*))
+                                  allow-now-p (limit *default-next-time-limit*))
   "Return a `scheduler' function of no arguments that returns times
 from init-time on by repeatedly calling NEXT-TIME on SCHEDULE. ALLOW-NOW-P
 is passed to the first invocation of NEXT-TIME."
@@ -78,8 +78,8 @@ NIL for backward compatibility."
 (defun leap-years-before (year)
   (let ((years (- year 1901)))
     (+ (- (truncate years 4)
-          (truncate years 100))
-       (truncate (+ years 300) 400))))
+           (truncate years 100))
+        (truncate (+ years 300) 400))))
 
 (defun decode-universal-time* (time)
   "Return the decoded time components as a list instead of multiple
@@ -96,10 +96,10 @@ that was returned by DECODE-UNIVERSAL-TIME*."
   (let ((year (elt decoded-time 5))
         (month (elt decoded-time 4)))
     (+ (aref #(31 28 31 30 31 30 31 31 30 31 30 31) (1- month))
-       (if (= 2 month)
-           (- (leap-years-before (1+ year))
-              (leap-years-before year))
-           0))))
+        (if (= 2 month)
+            (- (leap-years-before (1+ year))
+                (leap-years-before year))
+            0))))
 
 (defun min-valid-decoded-time-component (n)
   "Return the smallest valid value for the Nth decoded time component."
@@ -218,7 +218,7 @@ DAY-OF-WEEK bumpers. This function rolls the two bumpers into one."
   (:documentation "A cron-like schedule. See MAKE-CRON-SCHEDULE for details."))
 
 (defun make-cron-schedule (&key second minute hour day-of-month
-                           month year day-of-week)
+                             month year day-of-week)
   "Construct a cron-like scheduler from the SECOND, MINUTE, etc
 bumpers for components of decoded times (using the default time zone
 for the time being). A bumper in its most generic from a function of
@@ -270,7 +270,7 @@ dependency graph."
   (loop for i upfrom 0
         for bumper in bumpers
         when bumper
-        minimize (bumper-index->component-index i)))
+          minimize (bumper-index->component-index i)))
 
 (defun bump-lowest-component (bumpers time)
   "Bump the lowest component of decoded TIME that has a bumper. Return
@@ -296,22 +296,22 @@ it as a universal time."
                          (next-bump (elt bumpers n) decoded-time n))
           do
              (cond ((null next)
-                 (when (= n 5)
-                   ;; The desired year is in the past, there is no next
-                   ;; time.
-                   (return nil))
-                 ;; No valid value for this component, bump the next one
-                 ;; and come again.
-                 (multiple-value-setq (decoded-time n)
-                   (bump-decoded-time decoded-time (1+ n))))
-                (t
-                 (when (< (elt decoded-time n) next)
-                   (setf (elt decoded-time n) next)
-                   (zero-decoded-time-below decoded-time n))
-                 (decf n)))
-          (setf init-time (encode-universal-time* decoded-time))
-          (when (minusp n)
-            (return init-time)))))
+                    (when (= n 5)
+                      ;; The desired year is in the past, there is no next
+                      ;; time.
+                      (return nil))
+                    ;; No valid value for this component, bump the next one
+                    ;; and come again.
+                    (multiple-value-setq (decoded-time n)
+                      (bump-decoded-time decoded-time (1+ n))))
+                   (t
+                    (when (< (elt decoded-time n) next)
+                      (setf (elt decoded-time n) next)
+                      (zero-decoded-time-below decoded-time n))
+                    (decf n)))
+             (setf init-time (encode-universal-time* decoded-time))
+             (when (minusp n)
+               (return init-time)))))
 
 
 ;;;; The convenience case: typed cron schedule
@@ -331,7 +331,7 @@ on top of FIND-DECODED-TIME-COMPONENT-BY-TYPE."
     (find-decoded-time-component-by-type type value decoded-time n)))
 
 (defun make-typed-cron-schedule (&key second minute hour day-of-month
-                                 month year day-of-week)
+                                   month year day-of-week)
   "A convenience function much like MAKE-CRON-SCHEDULE but assumes
 that no bumper can be a function designator so it must be a number,
 the symbol * or a type specifier in which case it calls
