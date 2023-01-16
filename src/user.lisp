@@ -4,22 +4,48 @@
 
 (defvar *schedules* nil)
 
-(defmacro schedule! (&key name form time)
+;; TODO Document the slots (in docstrings).
+;; TODO Document the benefits of this class (in readme).
+(defclass schedule ()
+  ((name  :initarg :name
+          :accessor name)
+   (form  :initarg :form
+          :accessor form)
+   (time  :initarg :time
+          :accessor time-spec)
+   (timer :initarg :timer
+          :accessor timer)
+   (memo  :initarg :memo
+          :accessor memo)
+   (cron-schedule :initarg :cron-schedule
+                  :accessor cron-schedule)
+   ))
+
+(defmacro schedule! (&key name form time (memo ""))
   "Schedule the FORM to be run with NAME and time spec TIME."
-  `(let* (;; create a stateless schedule
-          (schedule  (make-typed-cron-schedule ,@time))
-          ;; create a scheduler that remembers the last scheduled time
-          (scheduler (make-scheduler schedule))
+  `(let* ((cron-schedule            ; create a stateless schedule
+            (make-typed-cron-schedule ,@time))
+          (scheduler                ; create a scheduler that remembers the last scheduled time
+            (make-scheduler cron-schedule))
+          ;; Starts a thread that runs the form.
           (timer     (schedule-function (lambda () ,@form)
                                         scheduler
                                         :name ,name
                                         :immediate t
                                         :ignore-skipped t
-                                        :thread t)))
-     ;; schedule a function as a timer
-     (push timer *schedules*)))
+                                        :thread t))
+          ;; Package information for easier inspection later.
+          (schedule  (make-instance 'schedule
+                                    :name         ,name
+                                    :memo         ,memo
+                                    :form        ',form
+                                    :time        ',time
+                                    :timer         timer
+                                    :cron-schedule cron-schedule)))
+     (push schedule *schedules*)))
 
 (defmacro dry-run (n &optional schedule-definition)
+  ;; TODO This does not have to be a macro.
   "Dry-run N times for the schedule defined by the
 SCHEDULE-DEFINITION."
   (let ((x (gensym)))
@@ -29,9 +55,25 @@ SCHEDULE-DEFINITION."
            (format t "~s~%" (local-time:universal-to-timestamp next-time))
            (setf next-time (next-time schedule :init-time next-time)))))))
 
-;; API with schedules
-;; TODO Native inspection, pause.. etc.
-(defun all-schedules () *schedules*)
+(defun all-schedules (&optional pred)
+  "Return the list of schedules that satisfy the predicate PRED."
+  (if pred
+      (remove-if-not pred *schedules*)
+      *schedules*))
+
+(defmethod next-time ((schedule schedule)
+                      &key
+                        (init-time (get-universal-time))
+                        allow-now-p
+                        (limit *default-next-time-limit*))
+  ;; Document its usage in readme.
+  (local-time:universal-to-timestamp
+   (next-time (cron-schedule schedule)
+              :init-time   init-time
+              :allow-now-p allow-now-p
+              :limit       limit)))
+
+;; TODO Implement: Pause a schedule.
 
 (defun unschedule (schedule)
   "Unschedule SCHEDULE and return SCHEDULE as the primary value."
