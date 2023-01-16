@@ -18,8 +18,7 @@
    (memo  :initarg :memo
           :accessor memo)
    (cron-schedule :initarg :cron-schedule
-                  :accessor cron-schedule)
-   ))
+                  :accessor cron-schedule)))
 
 (defmacro schedule! (&key name form time (memo ""))
   "Schedule the FORM to be run with NAME and time spec TIME."
@@ -49,13 +48,14 @@
   "Dry-run N times for the schedule defined by the
 SCHEDULE-DEFINITION."
   (let ((x (gensym)))
-    `(let ((schedule (make-typed-cron-schedule ,@schedule-definition)))
+    `(let ((schedule (make-typed-cron-schedule ,@schedule-definition))) ; TODO In order to resolve the macro, some work has to be done here..
        (let ((next-time (next-time schedule)))
          (dotimes (,x ,n)
            (format t "~s~%" (local-time:universal-to-timestamp next-time))
            (setf next-time (next-time schedule :init-time next-time)))))))
 
 (defun all-schedules (&optional pred)
+  ;; TODO Document an example of PRED in readme.
   "Return the list of schedules that satisfy the predicate PRED."
   (if pred
       (remove-if-not pred *schedules*)
