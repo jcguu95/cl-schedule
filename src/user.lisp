@@ -77,6 +77,6 @@ SCHEDULE-DEFINITION."
 
 (defun unschedule (schedule)
   "Unschedule SCHEDULE and return SCHEDULE as the primary value."
-  (trivial-timers::unschedule-timer schedule)
+  (trivial-timers:unschedule-timer schedule)
   (setf *schedules* (remove schedule *schedules*))
   (values schedule *schedules*))
