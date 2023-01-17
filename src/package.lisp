@@ -21,7 +21,3 @@
    #:make-typed-cron-schedule
    #:find-decoded-time-component-by-type
    #:make-typed-cron-bumper))
-
-(defpackage :cl-schedule-2
-  (:use #:common-lisp)
-  (:export))

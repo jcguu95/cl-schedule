@@ -1,0 +1,155 @@
+* cl-schedule-2: a scheduling library in CL
+
+=cl-schedule= is a scheduling library in common-lisp. It serves as
+a replacement of traditional cron managers.
+
+--- TODO Start with a better set of examples. TODO ---
+
+Thanks to richer expressiveness of Lisp, it subsumes what a
+traditional cron manager can do. For example, the control string
+=*/25 5-6,10 * 7 1-3 /bin/echo Hello, world!= can be expressed as
+the following. More examples to come!
+
+#+begin_src common-lisp :eval never
+(defun m-of-25-p (n) (eql 0 (mod n 25)))
+(defun echo (text)
+  (uiop:run-program (format nil "echo ~a" text)
+                    :output *standard-output*))
+
+(schedule!
+ :name "Demo"
+ :func (lambda () (echo "Hello, world!"))
+ :time '(:minute (satisfies m-of-25-p)
+         :hour (or (integer 5 6) (member 10))
+         :month 7 ; TODO FIXME WRONG
+         :day-of-week (integer 0 2)))
+#+end_src
+
+Notice that you can dry-run the schedule (see below) to inspect
+the time of the upcoming events. Also notice that in order to
+respect the convention of =#'decode-universal-time=, =(0 1 2 3 4 5
+6)= means =(Mon Tue Wed Thu Fri Sat Sun)=. In particular, =(0 1 2)=
+means =(Mon Tue Wed)=.
+
+** Installation
+
+=cl-schedule= is on [[https://www.quicklisp.org/beta/][Quicklisp]]. To install and start using it,
+evaluate the form =(ql:quickload :cl-schedule)= in the repl.
+
+** Examples
+
+*** Basic examples
+
+Here are some easier examples.
+
+#+begin_src common-lisp :eval never
+;; 0 */2 * * * echo "Every two hours."
+(schedule!
+ :name "Demo"
+ :func (lambda () (echo "Every two hours."))
+ :time '(:hour (satisfies evenp)))
+
+;; 0 20 * * 4 echo "8pm on a Thursday."
+(schedule!
+ :name "Demo"
+ :func (lambda () (echo "8pm on a Thursday."))
+ ;; FIXME following is wrong
+ :time '(:hour 20 :day-of-week 3))    ; 0 means Mon, 3 means Thu, and 6 means Sun.
+#+end_src
+
+*** Finer than cron
+
+=cl-schedule= is strictly finer than cron. In particular, the user
+can specify its behavior to each second. For example, to make a
+thread that prints the universal time every ten seconds, call the
+macro =schedule!= as follows.
+
+#+begin_src common-lisp :eval never
+(schedule!
+ :name "Demo"
+ :func (lambda () (print (get-universal-time)) (terpri))
+ :time '(:second (member 0 10 20 30 40 50)))
+#+end_src
+
+*** Unschedule the timers
+
+Unschedule all timers.
+
+#+begin_src common-lisp :eval never
+(mapc #'unschedule (all-schedules))
+#+end_src
+
+*** Dry-run a schedule
+
+It is helpful to inspect the time of the upcoming events. To do
+this, we can use the macro =dry-run= to list the time of the
+upcoming events. Here is an example that displays for a
+complicated schedule.
+
+(Notice that the schedule-definition is equivalent to the control
+string =*/25 5-6,10 * 7 1-3= in traditional cron managers.)
+
+#+begin_src common-lisp :eval never
+(defun m-of-25-p (n) (eql 0 (mod n 25)))
+(dry-run 30 '(:minute (satisfies m-of-25-p)
+              :hour (or (integer 5 6) (member 10)) ; 5~6 or 10
+              :month 7
+              :day-of-week (integer 0 2))) ; (0 1 2) means (Mon Tue Wed)
+#+end_src
+
+This returns ... (TODO)
+
+** Upcoming feature
+
+*** provide test cases
+
+*** timer inspection
+
+Document the following:
+
+  Let the user interact with the schedule.
+
+  1. Enable and disable the schedule.
+  2. Inspect the form, time spec, the next time to be fired.
+
+** FAQ
+
+*** What does it do if the job doesn't finish by the time it's scheduled to run again?
+
+TODO - FIXME check if this section is correct.
+
+---
+
+In that case, =cl-schedule= simply fires that job again on time,
+regardless if the old process is still running. If you do not
+like this behavior, you can alter the function for it to check if
+it has to evaluate its main body. For example, instead of
+
+#+begin_src common-lisp :eval never
+(schedule!
+ :name "Demo"
+ :func (lambda () (echo "Hello, world!"))
+ :time '(:minute (satisfies m-of-25-p)))
+#+end_src
+
+you can alter the =:FORM= slot
+
+#+begin_src common-lisp :eval never
+(schedule!
+ :name "Demo"
+ :func (lambda () (unless (still-running) (echo "Hello, world!")))
+ :time '(:minute (satisfies m-of-25-p)))
+#+end_src
+
+Notice that this is just a pseudo-code. The users should write
+=(still-running)= by themselves (this should not be hard).
+
+*** Developer Notes
+
+v1 is a rewrite of v0. v1 no longer depends on trivial-timers,
+which uses priority queues to schedule timers, making it harder
+to pre-schedule a timer at multiple different points of time in
+the future. v1 still depends on bordeaux-threads though. It
+maintains two global threads, the scheduler and the dispatcher.
+It also maintains two global collections, =*schedules*= and
+=*actions*=. A schedule is a description of what ..
