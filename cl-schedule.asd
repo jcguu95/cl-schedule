@@ -10,7 +10,16 @@
   :components ((:module "src"
                 :components ((:file "package")
                              (:file "user")
-                             (:file "cl-schedule"))))
+                             (:file "cl-schedule")
+                             ;; V2 is coming.
+                             (:file "v2.setup")
+                             (:file "v2.util")
+                             (:file "v2.schedule")
+                             (:file "v2.scheduler")
+                             (:file "v2.dispatcher")
+                             (:file "v2.main")
+                             (:file "v2.test")
+                             )))
   :serial t
   :depends-on (:bordeaux-threads :trivial-timers :local-time))
 
