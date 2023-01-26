@@ -36,3 +36,46 @@ to (init+range) that satisfies TIME-PREDICATE."
   (loop for i from init to (+ init range)
         when (funcall time-predicate i)
           collect i))
+
+(defun dry-run-2 (schedule
+                  &key
+                    (init (get-universal-time))
+                    (range 100))
+  ;; TODO After defining time-predicate as a class, redefine
+  ;; #'dry-run as a method, and rename this function to dry-run.
+  (dry-run (time-pred schedule)
+           :init init
+           :range range))
+
+(defun gen-unique-name (name)
+  "Generate a unique name."
+  (if (all-schedules-with-name name)
+      (let ((new-name (format nil "~d/~a" *uuid* name)))
+        (incf *uuid*)
+        (gen-unique-name new-name))
+      name))
+
+(defun next-shots (schedule)
+  "Return the times of the next few shots of SCHEDULE registered in
+*ACTIONS*."
+  (loop for time being the hash-keys of *actions*
+        when (find schedule (gethash time *actions*))
+          collect time))
+
+(defmethod info ((schedule schedule))
+  "Return the info of SCHEDULE."
+  (let ((name (name schedule))
+        (memo (memo schedule))
+        (func (func schedule))
+        (time (time-pred schedule))
+        (enabled? (enabled schedule))
+        (scheduled? (not (not (find schedule *schedules*))))
+        (next-shots (next-shots schedule)))
+    (alexandria:plist-hash-table
+     (list :name       name
+           :memo       memo
+           :func       func
+           :time       time
+           :enabled?   enabled?
+           :scheduled? scheduled?
+           :next-shots next-shots))))

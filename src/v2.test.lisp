@@ -21,7 +21,7 @@
 (log:config :info)
 
 (enable  (nth 2 *schedules*))
-(disable (nth 2 *schedules*))
+(disable (nth 1 *schedules*))
 
 (disable-all-schedules)
 (remove-all-schedules)

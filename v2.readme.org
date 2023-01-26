@@ -1,12 +1,17 @@
 * cl-schedule-2: a scheduling library in CL
 
 A schedule is a function with a time spec. =cl-schedule-2= calls
-the function according to its time spec. For example, to run a
-function every hour on the hour,
+the function according to its time spec.
+
+For example, to run a function every hour on the hour,
 
 #+begin_src lisp
+(defun print! (str)
+  (print! "~a" str)
+  (terpri))
+
 (schedule!
- :func (lambda () (format t "Hello!"))
+ :func (lambda () (print! "Hello!"))
  :time '(:second 0
          :minute 0))
 #+end_src
@@ -15,7 +20,7 @@ To run a function every day at 8am and 8pm,
 
 #+begin_src lisp
 (schedule!
- :func (lambda () (format t "Hello!"))
+ :func (lambda () (print! "Hello!"))
  :time '(:second 0
          :minute 0
          :hour   (8 20)))
@@ -25,20 +30,20 @@ To run a function every 30 seconds from 8am to 6pm,
 
 #+begin_src lisp
 (schedule!
- :func (lambda () (format t "Hello!"))
+ :func (lambda () (print! "Hello!"))
  :time '(:second (0 30)
          :hour   (integer 8 18)))
 #+end_src
 
 The previous example shows that =cl-schedule= integrates Common
 Lisp type system into its time spec syntax. For a more
-sophisticated example, consider the cron time spec =*/25 5-6,10 *
-7 1-3=,
+sophisticated example, consider the cron time spec
+=*/25 5-6,10 * 7 1-3=,
 
 #+begin_src lisp
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
 (schedule!
- :func (lambda () (format t "Hello!"))
+ :func (lambda () (print! "Hello!"))
  :time '(:minute (satisfies m-of-25-p)
          :hour (or (integer 5 6) (member 10))
          :month 7
@@ -49,7 +54,7 @@ You can prepare the function and time spec elsewhere. For
 example, the previous example is equivalent to the following
 
 #+begin_src lisp
-(let ((func  (lambda () (format t "Hello!")))
+(let ((func  (lambda () (print! "Hello!")))
       (time '(:minute (satisfies m-of-25-p)
               :hour (or (integer 5 6) (member 10))
               :month 7
@@ -64,7 +69,7 @@ runs every 10 seconds:
 
 #+begin_src lisp
 (schedule!
- :func (lambda () (format t "Hello!")))
+ :func (lambda () (print! "Hello!")))
  :time (lambda (time)
          (= 0 (mod (decode-universal-time time) 10)))
 #+end_src
@@ -81,15 +86,37 @@ A overly complicated example that makes use of this power,
         (decode-universal-time time)
       (and (= 0 second minute)
            (not (= 1 month))
-           (fibonaccip (* (+ hour day) month))))))
+           (fibonacci? (* (+ hour day) month))))))
 
 (schedule!
- :func (lambda () (format t "Hello!"))
+ :func (lambda () (print! "Hello!"))
  :time *a-complicated-time-spec*)
 #+end_src
 
 The function =dry-run= generates the next few times that satisfy
 a given time spec. For example,
+
+#+begin_src lisp
+(mapcar #'local-time:universal-to-timestamp
+        (dry-run '(:second (member 0) ; TODO Remove MEMBER after writing the compiler.
+                   :minute (member 0) ; TODO Remove MEMBER after writing the compiler.
+                   :hour   (member 8 20)) ; TODO Remove MEMBER after writing the compiler.
+        :init  3882950000 ; universal time (@2023-01-17T05:13:20.000000-08:00)
+        :range 400000     ; search range   (seconds)
+        ))
+;; =>
+;; (@2023-01-18T08:00:00.000000+08:00
+;;  @2023-01-18T20:00:00.000000+08:00
+;;  @2023-01-19T08:00:00.000000+08:00
+;;  @2023-01-19T20:00:00.000000+08:00
+;;  @2023-01-20T08:00:00.000000+08:00
+;;  @2023-01-20T20:00:00.000000+08:00
+;;  @2023-01-21T08:00:00.000000+08:00
+;;  @2023-01-21T20:00:00.000000+08:00
+;;  @2023-01-22T08:00:00.000000+08:00)
+#+end_src
+
+It works for general time specs too:
 
 #+begin_src lisp
 (mapcar #'local-time:universal-to-timestamp
@@ -114,29 +141,17 @@ a given time spec. For example,
 ;;  @2023-02-09T08:00:00.000000-08:00)
 #+end_src
 
-It works for general time specs too.
-
 ** TODOs
 
++ Time spec
+  + Documentation.
+  + Make it a class for it.
+  + type-spec, shortened type-spec, cron style, predicate function
+
 + Write test cases for the demo'd examples.
-+ Support usual cron time spec syntax, by compiling it into our
-  spec syntax (in terms of CL type spec).
-+ Implement feature: the user will be able to check a list of
-  times when the schedules have been called by =cl-schedule-2=.
-+ Implement feature: List all enabled schedules.
-+ Implement feature: If name is empty, generate a unique name.
-+ Implement feature: Each schedule must have a name. And no
-  schedules on the global queue =*schedules*= can have the same
-  name (=#'equal=).
-+ Implement feature: =#'print-schedules-info=.
-+ Implement feature: =#'next-registered-shots (schedule)=.
-+ Implement feature: =#'dry-run (schedule)=.
-+ Provide example: Check every =1= hour if a certain service is
-  still alive.
-+ Document time spec, and which are compiled to which: function
-  (general), CL type-spec style, shortened CL type-spec style
-  (shorthand), cron style (unsupported yet).
-+ schedule! vs schedule: (schedule (make-schedule .. etc)).
++ Pressure Test (I observe that sometimes it skips! Not sure if
+  it is because of log4cl. Fire many schedules that run each
+  second.)
 
 ** FAQ
 
