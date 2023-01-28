@@ -146,14 +146,12 @@ It works for general time specs too:
 ** TODOs
 
 + Write a doc for developers.
++ Write a dedicated doc (with programmatic tests) for time-spec.
++ Support lists as the value of =:init= in =#'dry-run=.
++ Write test cases for the examples in readme.
 + Allow =:mon= =:tue= =:wed= .. =:sun= in our time-spec.
 + Handle errors from schedules and prevent one failure from
   blocking others.
-+ Write test cases for the demo'd examples.
-+ Pressure Test (I observed that sometimes some schedules were
-  skipped when there are too many cases! Not sure if it is
-  because of =log4cl=. Pressure test it by firing many schedules
-  that run on each second.)
 
 ** FAQ
 
@@ -174,4 +172,4 @@ It works for general time specs too:
 ** Help Wanted
 
 Implement a function that compiles usual cron-type time spec
-(e.g. ="0 * * * *"=) to a time spec defined in this project.
+(e.g. =0 * * * *=) to a time spec defined in this project.

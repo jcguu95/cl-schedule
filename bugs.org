@@ -1,9 +1,6 @@
 * BUGS
 
-#+begin_quote
-These symbols are not accessible in the TRIVIAL-TIMERS package:
-  (#:TIMER #:TIMER-NAME #:TIMER-SCHEDULED-P #:MAKE-TIMER
-   #:SCHEDULE-TIMER #:UNSCHEDULE-TIMER #:LIST-ALL-TIMERS)
-#+end_quote
-
-Need to update my quicklisp distribution?
++ Pressure Test: I observed that sometimes some schedules were
+  skipped when there are too many cases! Not sure if it is
+  because of =log4cl=. Pressure test it by firing many schedules
+  that run on each second.
