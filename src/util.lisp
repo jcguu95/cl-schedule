@@ -1,29 +1,13 @@
-(in-package :cl-schedule-2)
+(in-package :cl-schedule)
 
-(defun pred<-spec (time-spec)
-  (lambda (time)                        ; universal time
-    (multiple-value-bind (second minute hour day month year)
-        (decode-universal-time time)
-      (unless (getf time-spec :year)
-        (setf (getf time-spec :year) t))
-      (unless (getf time-spec :month)
-        (setf (getf time-spec :month) t))
-      (unless (getf time-spec :day)
-        (setf (getf time-spec :day) t))
-      (unless (getf time-spec :hour)
-        (setf (getf time-spec :hour) t))
-      (unless (getf time-spec :minute)
-        (setf (getf time-spec :minute) t))
-      (unless (getf time-spec :second)
-        (setf (getf time-spec :second) t))
-      (and
-       ;; TODO Support week-day and timezone?
-       (typep year   (getf time-spec :year))
-       (typep month  (getf time-spec :month))
-       (typep day    (getf time-spec :day))
-       (typep hour   (getf time-spec :hour))
-       (typep minute (getf time-spec :minute))
-       (typep second (getf time-spec :second))))))
+(defmethod equal- ((x null) (y null)) t)
+
+(defmethod equal- ((x timestamp) (y timestamp))
+  (local-time:timestamp= x y))
+
+(defmethod equal- ((x cons) (y cons))
+  (and (equal- (car x) (car y))
+       (equal- (cdr x) (cdr y))))
 
 (defun dry-run (time-spec
                 &key
@@ -31,8 +15,15 @@
                   (range 100))
   "Return the list of times (in universal format) from init
 to (init+range) that satisfies TIME-SPEC."
-  ;; (when (consp time-predicate)
-  ;;   (setf time-predicate (pred<-spec time-predicate)))
+  (when (consp init)
+    (let ((year   (nth 0 init))
+          (month  (nth 1 init))
+          (date   (nth 2 init))
+          (hour   (nth 3 init))
+          (minute (nth 4 init))
+          (second (nth 5 init)))
+      (setf init (encode-universal-time second minute hour
+                                        date   month  year))))
   (loop for i from init to (+ init range)
         when (satisfies-time-spec-p i time-spec)
           collect i))

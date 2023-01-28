@@ -1,4 +1,4 @@
-(in-package :cl-schedule-2)
+(in-package :cl-schedule)
 (declaim (optimize (debug 3) (safety 3)))
 
 (defvar *schedules* nil)

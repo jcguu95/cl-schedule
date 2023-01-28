@@ -1,4 +1,4 @@
-(in-package :cl-schedule-2)
+(in-package :cl-schedule)
 
 ;; The main function in this file is #'satisfies-time-spec-p, which defines
 ;; the semantics of time-spec.

@@ -1,4 +1,4 @@
-(in-package :cl-schedule-2)
+(in-package :cl-schedule)
 
 (defclass schedule ()
   ((func    :initarg :func

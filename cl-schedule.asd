@@ -6,11 +6,14 @@
   :components ((:module "src"
                 :components ((:file "package")
                              (:file "setup")
-                             (:file "util")
                              (:file "schedule")
+                             (:file "util")
+                             (:file "time-spec")
                              (:file "scheduler")
                              (:file "dispatcher")
                              (:file "main")
                              (:file "test"))))
   :serial t
   :depends-on (:bordeaux-threads :local-time))
+
+(local-time:enable-read-macros)

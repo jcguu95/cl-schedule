@@ -1,4 +1,4 @@
-(in-package :cl-schedule-2)
+(in-package :cl-schedule)
 
 (defun make-schedule (&key time func name (memo ""))
   "The official API to make a schedule."

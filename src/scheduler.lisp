@@ -1,4 +1,4 @@
-(in-package :cl-schedule-2)
+(in-package :cl-schedule)
 
 (defparameter *scheduler-name*
   "cl-schedule:global-scheduler")

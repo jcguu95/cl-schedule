@@ -1,5 +1,6 @@
 (in-package :cl)
 
-(defpackage :cl-schedule-2
-  (:use #:common-lisp)
+(defpackage :cl-schedule
+  (:use #:common-lisp
+        #:local-time)
   (:export))
