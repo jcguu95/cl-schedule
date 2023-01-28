@@ -145,7 +145,6 @@ It works for general time specs too:
 
 ** TODOs
 
-+ Remove v1 completely. Let v2 take over.
 + Write a doc for developers.
 + Allow :mon :tue :wed.. :sun in our time-spec.
 + Handle errors from schedules and prevent one failure from
