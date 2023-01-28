@@ -1,191 +1,177 @@
 * cl-schedule: a scheduling library in CL
 
-=cl-schedule= is a scheduling library in common-lisp. It serves as
-a replacement of traditional cron managers.
+A schedule is a function with a time spec. =cl-schedule= calls
+the function according to its time spec.
 
-Thanks to richer expressiveness of Lisp, it subsumes what a
-traditional cron manager can do. For example, the control string
-=*/25 5-6,10 * 7 1-3 /bin/echo Hello, world!= can be expressed as
-the following. More examples to come!
+For example, to run a function every hour on the hour,
 
-#+begin_src common-lisp :eval never
+#+begin_src lisp
+(defun print! (str)
+  (format t "~a" str)
+  (terpri))
+
+(schedule!
+ :func (lambda () (print! "Hello!"))
+ :time '(:second 0
+         :minute 0))
+#+end_src
+
+To run a function every day at 8am and 8pm,
+
+#+begin_src lisp
+(schedule!
+ :func (lambda () (print! "Hello!"))
+ :time '(:second 0
+         :minute 0
+         :hour   (8 20)))
+#+end_src
+
+To run a function every 30 seconds from 8am to 6pm,
+
+#+begin_src lisp
+(schedule!
+ :func (lambda () (print! "Hello!"))
+ :time '(:second (0 30)
+         :hour   (integer 8 18)))
+#+end_src
+
+The previous example shows that =cl-schedule= integrates Common
+Lisp type system into its time spec syntax. For a more
+sophisticated example, consider the cron time spec
+=*/25 5-6,10 * 7 1-3=,
+
+#+begin_src lisp
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
-(defun echo (text)
-  (uiop:run-program (format nil "echo ~a" text)
-                    :output *standard-output*))
+(schedule!
+ :func (lambda () (print! "Hello!"))
+ :time '(:minute (satisfies m-of-25-p)
+         :hour (or (integer 5 6) (member 10))
+         :month 7
+         :day-of-week (integer 0 2))) ; day-of-week (0 1 2 3 4 5 6) means (Mon Tue Wed Thu Fri Sat Sun)
+#+end_src
+
+You can prepare the function and time spec elsewhere. For
+example, the previous example is equivalent to the following
+
+#+begin_src lisp
+(let ((func  (lambda () (print! "Hello!")))
+      (time '(:minute (satisfies m-of-25-p)
+              :hour (or (integer 5 6) (member 10))
+              :month 7
+              :day-of-week (integer 0 2))))
+  (schedule! :func func :time time))
+#+end_src
+
+The time spec does not have to be in the form of such list.
+=cl-schedule= supports any function with one parameter
+(interpreted as the universal time). For example, a function that
+runs every 10 seconds:
+
+#+begin_src lisp
+(schedule!
+ :func (lambda () (print! "Hello!")))
+ :time (lambda (time)
+         (= 0 (mod (decode-universal-time time) 10)))
+#+end_src
+
+A overly complicated example that makes use of this power,
+
+#+begin_src lisp
+(defun fibonacci? (n)
+  (find n '(0 1 2 3 5 8 13 21 34 55)))
+
+(defparameter *a-complicated-time-spec*
+  (lambda (time)
+    (multiple-value-bind (second minute hour day month year)
+        (decode-universal-time time)
+      (and (= 0 second minute)
+           (not (= 1 month))
+           (fibonacci? (* (+ hour day) month))))))
 
 (schedule!
- :name "Demo"
- :form ((echo "Hello, world!"))
- :time (:minute '(satisfies m-of-25-p)
-        :hour '(or (integer 5 6) (member 10))
-        :month 7
-        :day-of-week '(integer 0 2)))
+ :func (lambda () (print! "Hello!"))
+ :time *a-complicated-time-spec*)
 #+end_src
 
-[[http://clhs.lisp.se/Body/04_bc.htm][Common Lisp's type specifiers]] are used as the DSL to specify the
-time slot. This enables the user to control the time-spec with
-freedom [[https://cl-su-ai.cddddr.org/msg01196.html][(1)]].
+The function =dry-run= generates the next few times that satisfy
+a given time spec. For example,
 
-Notice that you can dry-run the schedule (see below) to inspect
-the time of the upcoming events. Also notice that in order to
-respect the convention of =#'decode-universal-time=, =(0 1 2 3 4 5
-6)= means =(Mon Tue Wed Thu Fri Sat Sun)=. In particular, =(0 1 2)=
-means =(Mon Tue Wed)=.
-
-** Installation
-
-=cl-schedule= is on [[https://www.quicklisp.org/beta/][Quicklisp]]. To install and start using it,
-evaluate the form =(ql:quickload :cl-schedule)= in the repl.
-
-** Examples
-
-*** Basic examples
-
-Here are some easier examples.
-
-#+begin_src common-lisp :eval never
-;; 0 */2 * * * echo "Every two hours."
-(schedule!
- :name "Demo"
- :form ((echo "Every two hours."))
- :time (:hour '(satisfies evenp)))
-
-;; 0 20 * * 4 echo "8pm on a Thursday."
-(schedule!
- :name "Demo"
- :form ((echo "8pm on a Thursday."))
- :time (:hour 20 :day-of-week 3))    ; 0 means Mon, 3 means Thu, and 6 means Sun.
+#+begin_src lisp
+;; TODO Use local-time's read-table to write test cases.
+(mapcar #'local-time:universal-to-timestamp
+        (dry-run '(:second 0
+                   :minute 0
+                   :hour   8 20))
+        :init  3882950000 ; universal time (@2023-01-17T05:13:20.000000-08:00)
+        :range 400000     ; search range   (seconds)
+        )
+;; =>
+;; (@2023-01-18T08:00:00.000000+08:00
+;;  @2023-01-18T20:00:00.000000+08:00
+;;  @2023-01-19T08:00:00.000000+08:00
+;;  @2023-01-19T20:00:00.000000+08:00
+;;  @2023-01-20T08:00:00.000000+08:00
+;;  @2023-01-20T20:00:00.000000+08:00
+;;  @2023-01-21T08:00:00.000000+08:00
+;;  @2023-01-21T20:00:00.000000+08:00
+;;  @2023-01-22T08:00:00.000000+08:00)
 #+end_src
 
-*** Finer than cron
+It works for general time specs too:
 
-=cl-schedule= is strictly finer than cron. In particular, the user
-can specify its behavior to each second. For example, to make a
-thread that prints the universal time every ten seconds, call the
-macro =schedule!= as follows.
-
-#+begin_src common-lisp :eval never
-(schedule!
- :name "demo"
- :form ((print (get-universal-time)) (terpri))
- :time (:second '(member 0 10 20 30 40 50)))
+#+begin_src lisp
+;; TODO Use local-time's read-table to write test cases.
+(mapcar #'local-time:universal-to-timestamp
+        (dry-run *a-complicated-time-spec*
+                 :init  3882950000 ; universal time (@2023-01-17T05:13:20.000000-08:00)
+                 :range 2000000    ; search range   (seconds)
+                 ))
+;; =>
+;; (@2023-02-01T00:00:00.000000-08:00
+;;  @2023-02-01T03:00:00.000000-08:00
+;;  @2023-02-01T16:00:00.000000-08:00
+;;  @2023-02-02T02:00:00.000000-08:00
+;;  @2023-02-02T15:00:00.000000-08:00
+;;  @2023-02-03T01:00:00.000000-08:00
+;;  @2023-02-03T14:00:00.000000-08:00
+;;  @2023-02-04T00:00:00.000000-08:00
+;;  @2023-02-04T13:00:00.000000-08:00
+;;  @2023-02-05T12:00:00.000000-08:00
+;;  @2023-02-06T11:00:00.000000-08:00
+;;  @2023-02-07T10:00:00.000000-08:00
+;;  @2023-02-08T09:00:00.000000-08:00
+;;  @2023-02-09T08:00:00.000000-08:00)
 #+end_src
 
-*** Unschedule the timers
+** TODOs
 
-Unschedule all timers.
-
-#+begin_src common-lisp :eval never
-(mapc #'unschedule (all-schedules))
-#+end_src
-
-*** Dry-run a schedule
-
-It is helpful to inspect the time of the upcoming events. To do
-this, we can use the macro =dry-run= to list the time of the
-upcoming events. Here is an example that displays for a
-complicated schedule.
-
-(Notice that the schedule-definition is equivalent to the control
-string =*/25 5-6,10 * 7 1-3= in traditional cron managers.)
-
-#+begin_src common-lisp :eval never
-(defun m-of-25-p (n) (eql 0 (mod n 25)))
-(dry-run 30 (:minute '(satisfies m-of-25-p)
-             :hour '(or (integer 5 6) (member 10)) ; 5~6 or 10
-             :month 7
-             :day-of-week '(integer 0 2))) ; (0 1 2) means (Mon Tue Wed)
-#+end_src
-
-This prints the following to =*standard-output*=.
-
-#+begin_src text
-;; Ran in Jan 2023.
-@2023-07-03T05:00:00.000000-05:00 ;; Monday
-@2023-07-03T05:25:00.000000-05:00
-@2023-07-03T05:50:00.000000-05:00
-@2023-07-03T06:00:00.000000-05:00
-@2023-07-03T06:25:00.000000-05:00
-@2023-07-03T06:50:00.000000-05:00
-@2023-07-03T10:00:00.000000-05:00
-@2023-07-03T10:25:00.000000-05:00
-@2023-07-03T10:50:00.000000-05:00
-@2023-07-04T05:00:00.000000-05:00 ;; Tuesday
-@2023-07-04T05:25:00.000000-05:00
-@2023-07-04T05:50:00.000000-05:00
-@2023-07-04T06:00:00.000000-05:00
-@2023-07-04T06:25:00.000000-05:00
-@2023-07-04T06:50:00.000000-05:00
-@2023-07-04T10:00:00.000000-05:00
-@2023-07-04T10:25:00.000000-05:00
-@2023-07-04T10:50:00.000000-05:00
-@2023-07-05T05:00:00.000000-05:00 ;; Wednesday
-@2023-07-05T05:25:00.000000-05:00
-@2023-07-05T05:50:00.000000-05:00
-@2023-07-05T06:00:00.000000-05:00
-@2023-07-05T06:25:00.000000-05:00
-@2023-07-05T06:50:00.000000-05:00
-@2023-07-05T10:00:00.000000-05:00
-@2023-07-05T10:25:00.000000-05:00
-@2023-07-05T10:50:00.000000-05:00
-@2023-07-10T05:00:00.000000-05:00 ;; Monday
-@2023-07-10T05:25:00.000000-05:00
-@2023-07-10T05:50:00.000000-05:00
-#+end_src
-
-** Upcoming feature
-
-*** provide test cases
-
-*** cron syntax
-
-Support cron syntax directly. See =./scr/cron-to-lisp.lisp= for a
-detailed plan. Hopefully this will let =cl-schedule= to
-(lisp-expressively) replace [[https://github.com/endsec/scheduler][scheduler]] completely (modulo the
-randomness supported there).
-
-*** integration with service
-
-Wrap the functions run by =cl-schedule= with some logging facility
-by other tools (e.g. [[https://github.com/melisgl/journal#x-28JOURNAL-3AJOURNAL-20CLASS-29][journal]]), and set the slot =:init-time= to the
-last running time. This allows skipped schedules be warned and
-run. The end result is a schedule in which an
-once-every-five-month task makes sense on a machine that shuts
-down every day. Hopefully, this will make =cl-schedule= as an
-alternative to =systemd.timer=.
-
-*** timer inspection
-
-Let the user interact with the schedule.
-
-1. Enable and disable the schedule.
-2. Inspect the form, time spec, the next time to be fired.
++ Remove v1 completely. Let v2 take over.
++ Write a doc for developers.
++ Allow :mon :tue :wed.. :sun in our time-spec.
++ Handle errors from schedules and prevent one failure from
+  blocking others.
++ Write test cases for the demo'd examples.
++ Pressure Test (I observe that sometimes it skips! Not sure if
+  it is because of log4cl. Fire many schedules that run each
+  second.)
 
 ** FAQ
 
-*** What does it do if the job doesn't finish by the time it's scheduled to run again?
++ Q. What if a schedule is missed? For example, perhaps the OS is
+  asleep when a schedule is meant to be run?
 
-In that case, =cl-schedule= simply fires that job again on time,
-regardless if the old process is still running. If you do not
-like this behavior, you can alter the function for it to check if
-it has to evaluate its main body. For example, instead of
++ A. =cl-schedule= does not support re-running or checking the
+  schedule. However, it should not be hard to achieve by
+  providing functions that remember some information by
+  themselves.
 
-#+begin_src common-lisp :eval never
-(schedule!
- :name "Demo"
- :form ((echo "Hello, world!"))
- :time (:minute '(satisfies m-of-25-p)))
-#+end_src
++ Q. How to check the history of schedule?
 
-you can alter the =:FORM= slot
++ A. We will support this soon: the user will be able to check a
+  list of times when the schedules have been called by
+  =cl-schedule=.
 
-#+begin_src common-lisp :eval never
-(schedule!
- :name "Demo"
- :form ((unless (still-running) (echo "Hello, world!")))
- :time (:minute '(satisfies m-of-25-p)))
-#+end_src
+** Help Wanted
 
-Notice that this is just a pseudo-code. The users should write
-=(still-running)= by themselves (this should not be hard).
+Implement a function that compiles usual cron-type time spec
+(e.g. "0 * * * *") to a time spec defined in this project.
