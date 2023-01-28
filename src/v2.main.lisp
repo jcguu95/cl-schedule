@@ -22,6 +22,7 @@
 
 (defun schedule! (&key time func name (memo ""))
   "The official API to schedule a schedule from spec."
+  (reset-global-scheduler)
   (schedule (make-schedule :func func
                            :name name
                            :memo memo

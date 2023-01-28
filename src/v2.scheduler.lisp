@@ -34,6 +34,8 @@ superficially by thread names."
                           (setf time-slot (list schedule))))))))))
 
 (defun reset-global-scheduler ()
+  (setf *counter* 0)
+  (setf *actions* (make-hash-table))
   (mapc #'bt:destroy-thread (global-schedulers))
   (bt:make-thread #'global-scheduler
                   :name *scheduler-name*))
