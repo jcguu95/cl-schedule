@@ -97,13 +97,14 @@ The function =dry-run= generates the next few times that satisfy
 a given time spec. For example,
 
 #+begin_src lisp
+;; TODO Use local-time's read-table to write test cases.
 (mapcar #'local-time:universal-to-timestamp
-        (dry-run '(:second (member 0) ; TODO Remove MEMBER after writing the compiler.
-                   :minute (member 0) ; TODO Remove MEMBER after writing the compiler.
-                   :hour   (member 8 20)) ; TODO Remove MEMBER after writing the compiler.
+        (dry-run '(:second 0
+                   :minute 0
+                   :hour   8 20))
         :init  3882950000 ; universal time (@2023-01-17T05:13:20.000000-08:00)
         :range 400000     ; search range   (seconds)
-        ))
+        )
 ;; =>
 ;; (@2023-01-18T08:00:00.000000+08:00
 ;;  @2023-01-18T20:00:00.000000+08:00
@@ -119,6 +120,7 @@ a given time spec. For example,
 It works for general time specs too:
 
 #+begin_src lisp
+;; TODO Use local-time's read-table to write test cases.
 (mapcar #'local-time:universal-to-timestamp
         (dry-run *a-complicated-time-spec*
                  :init  3882950000 ; universal time (@2023-01-17T05:13:20.000000-08:00)
@@ -143,10 +145,12 @@ It works for general time specs too:
 
 ** TODOs
 
++ Write a doc for developers.
 + Write test cases for the demo'd examples.
 + Pressure Test (I observe that sometimes it skips! Not sure if
   it is because of log4cl. Fire many schedules that run each
   second.)
++ Replace v1 with v2.
 
 ** FAQ
 

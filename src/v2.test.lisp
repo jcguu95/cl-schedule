@@ -1,5 +1,7 @@
 (in-package :cl-schedule-2)
 
+(log:config :info)
+
 (schedule! :time (lambda (time)
                    (= 0 (mod (decode-universal-time time) 1)))
            :func (lambda () (log:info "Schedule-1 dispatched!"))
@@ -17,11 +19,6 @@
            :func (lambda () (log:info "Schedule-10 dispatched!"))
            :name "TEST-10"
            :memo "Just a test")
-
-(log:config :info)
-
-(enable  (nth 2 *schedules*))
-(disable (nth 1 *schedules*))
 
 (disable-all-schedules)
 (remove-all-schedules)
