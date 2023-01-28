@@ -144,9 +144,7 @@ It works for general time specs too:
 ** TODOs
 
 + Time spec
-  + Documentation.
-  + Make it a class for it.
-  + type-spec, shortened type-spec, cron style, predicate function
+  + Integrate it with dry-run.
 
 + Write test cases for the demo'd examples.
 + Pressure Test (I observe that sometimes it skips! Not sure if
