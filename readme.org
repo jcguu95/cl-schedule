@@ -138,7 +138,6 @@ It works for general time specs too:
 
 + Write a doc for developers.
 + Write a dedicated doc (with programmatic tests) for time-spec.
-+ Support lists as the value of =:init= in =#'dry-run=.
 + Write test cases for the examples in readme.
 + Allow =:mon= =:tue= =:wed= .. =:sun= in our time-spec.
 + Handle errors from schedules and prevent one failure from
