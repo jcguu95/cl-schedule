@@ -7,7 +7,7 @@ For example, to run a function every hour on the hour,
 
 #+begin_src lisp
 (defun print! (str)
-  (print! "~a" str)
+  (format t "~a" str)
   (terpri))
 
 (schedule!
@@ -145,12 +145,15 @@ It works for general time specs too:
 
 ** TODOs
 
++ Remove v1 completely. Let v2 take over.
 + Write a doc for developers.
++ Allow :mon :tue :wed.. :sun in our time-spec.
++ Handle errors from schedules and prevent one failure from
+  blocking others.
 + Write test cases for the demo'd examples.
 + Pressure Test (I observe that sometimes it skips! Not sure if
   it is because of log4cl. Fire many schedules that run each
   second.)
-+ Replace v1 with v2.
 
 ** FAQ
 
