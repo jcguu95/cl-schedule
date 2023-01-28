@@ -57,13 +57,15 @@
 ;;  @2023-01-17T05:21:05.000000-08:00 @2023-01-17T05:21:08.000000-08:00
 ;;  @2023-01-17T05:21:13.000000-08:00 @2023-01-17T05:21:21.000000-08:00)
 
+;; TODO Use read-table of local-time and write test cases.
+
 (mapcar #'local-time:universal-to-timestamp
         (dry-run (lambda (time)
                    (multiple-value-bind (second minute hour day month year)
                        (decode-universal-time time)
                      (and (= 0 second minute)
                           (not (= 1 month))
-                          (fibonaccip (* (+ hour day) month)))))
+                          (fibonacci? (* (+ hour day) month)))))
                  :init  3882950000 ; universal time (@2023-01-17T05:13:20.000000-08:00)
                  :range 2000000    ; search range   (seconds)
                  ))

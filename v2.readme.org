@@ -143,9 +143,6 @@ It works for general time specs too:
 
 ** TODOs
 
-+ Time spec
-  + Integrate it with dry-run.
-
 + Write test cases for the demo'd examples.
 + Pressure Test (I observe that sometimes it skips! Not sure if
   it is because of log4cl. Fire many schedules that run each
@@ -166,3 +163,8 @@ It works for general time specs too:
 + A. We will support this soon: the user will be able to check a
   list of times when the schedules have been called by
   =cl-schedule-2=.
+
+** Help Wanted
+
+Implement a function that compiles usual cron-type time spec
+(e.g. "0 * * * *") to a time spec defined in this project.

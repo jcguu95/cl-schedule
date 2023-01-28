@@ -25,27 +25,17 @@
        (typep minute (getf time-spec :minute))
        (typep second (getf time-spec :second))))))
 
-(defun dry-run (time-predicate
+(defun dry-run (time-spec
                 &key
                   (init (get-universal-time))
                   (range 100))
   "Return the list of times (in universal format) from init
-to (init+range) that satisfies TIME-PREDICATE."
-  (when (consp time-predicate)
-    (setf time-predicate (pred<-spec time-predicate)))
+to (init+range) that satisfies TIME-SPEC."
+  ;; (when (consp time-predicate)
+  ;;   (setf time-predicate (pred<-spec time-predicate)))
   (loop for i from init to (+ init range)
-        when (funcall time-predicate i)
+        when (satisfies-time-spec-p i time-spec)
           collect i))
-
-(defun dry-run-2 (schedule
-                  &key
-                    (init (get-universal-time))
-                    (range 100))
-  ;; TODO After defining time-predicate as a class, redefine
-  ;; #'dry-run as a method, and rename this function to dry-run.
-  (dry-run (time-pred schedule)
-           :init init
-           :range range))
 
 (defun gen-unique-name (name)
   "Generate a unique name."
