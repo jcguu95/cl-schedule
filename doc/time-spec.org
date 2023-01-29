@@ -26,12 +26,13 @@ More explanations will follow.
                                        :date   3
                                        :month  4
                                        :year   2000))
-        (satisfies-time-spec-p utime `(:second (0 1 2)
-                                       :minute (< 0 _ 2)
-                                       :hour   (satisfies evenp)
-                                       :day    ()
-                                       :month  4
-                                       :year   ,(lambda (x) (> x 1000)))))))
+        (satisfies-time-spec-p utime `(:second (0 1 2)                  ; a list of integers
+                                       :minute (< 0 _ 2)                ; a list with at least one _
+                                       :hour   (satisfies evenp)        ; CL type specifier
+                                       :day    ()                       ; NIL means no restrictions
+                                       :month  4                        ; an integer
+                                       :year   ,(lambda (x) (> x 1000)) ; a function
+                                       )))))
 #+end_src
 
 *Definition* (time-spec): A time-spec is either a function of one
