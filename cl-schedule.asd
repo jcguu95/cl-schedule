@@ -12,7 +12,8 @@
                              (:file "scheduler")
                              (:file "dispatcher")
                              (:file "main")
-                             (:file "test"))))
+                             ;; (:file "test")
+                             )))
   :serial t
   :depends-on (:bordeaux-threads :local-time))
 

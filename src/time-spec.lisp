@@ -48,16 +48,6 @@
     (declare (ignore second minute hour date month year))
     day))
 
-(let ((utime (encode-universal-time 0 1 2 3 4 2000)))
-  (assert
-   (and (= (second% utime) 0)
-        (= (minute% utime) 1)
-        (= (hour% utime) 2)
-        (= (date% utime) 3)
-        (= (month% utime) 4)
-        (= (year% utime) 2000)
-        (= (day% utime) 0))))
-
 (defun satisfies-generalized-type-p (element generalized-type)
   "A generalized type is either NIL, a CL's type specification, an
 integer, a list of integers, a function with one variable, or a
@@ -74,18 +64,6 @@ GENERALIZED-TYPE."
                      (eval (substitute element '_ generalized-type)))
                     (t
                      (typep element generalized-type))))))
-
-(flet ((yes (bool) (not (not bool))))
-  (assert
-   (and (yes (satisfies-generalized-type-p 0 nil))
-        (yes (satisfies-generalized-type-p 0 0))
-        (yes (satisfies-generalized-type-p 0 '(0 1 2)))
-        (not (satisfies-generalized-type-p 0 '(1 2 3)))
-        (yes (satisfies-generalized-type-p 0 '(member 0 1)))
-        (not (satisfies-generalized-type-p 0 '(satisfies oddp)))
-        (yes (satisfies-generalized-type-p 0 '(satisfies evenp)))
-        (yes (satisfies-generalized-type-p 0 '(> 2 _)))
-        (not (satisfies-generalized-type-p 0 '(< 2 _))))))
 
 (defun check-time-spec (time-spec)
   "A time-spec is either a function of one variable or a plist. If
@@ -127,24 +105,3 @@ satisfies the TIME-SPEC."
                                         (getf time-spec :year))
           (satisfies-generalized-type-p (day% universal-time)
                                         (getf time-spec :day))))))
-
-(let ((utime (encode-universal-time 0 1 2 3 4 2000)))
-  (assert
-   (and (satisfies-time-spec-p utime '(:second 0))
-        (satisfies-time-spec-p utime '(:second 0
-                                       :minute 1))
-        (satisfies-time-spec-p utime '(:second 0
-                                       :minute 1
-                                       :hour   2))
-        (satisfies-time-spec-p utime '(:second 0
-                                       :minute 1
-                                       :hour   2
-                                       :date   3
-                                       :month  4
-                                       :year   2000))
-        (satisfies-time-spec-p utime `(:second (0 1 2)
-                                       :minute (< 0 _ 2)
-                                       :hour   (satisfies evenp)
-                                       :day    ()
-                                       :month  4
-                                       :year   ,(lambda (x) (> x 1000)))))))

@@ -1,6 +1,5 @@
 * TODOs
 
-+ Write unit tests for time-spec.
 + Merge dev to master (WARNING: this breaks API).
 
 * Contributions
