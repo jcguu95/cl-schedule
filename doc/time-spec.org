@@ -8,7 +8,7 @@ semantics of time-spec is given in its core function
 =#'satisfies-time-spec-p=, which takes two parameters, a universal
 time and a time-spec. To illustrate how it works and all of its
 possibilities, take a look at the following programmatic example.
-More explanations follow.
+More explanations will follow.
 
 #+begin_src lisp
 (let ((utime (encode-universal-time 0 1 2 3 4 2000)))
@@ -34,14 +34,14 @@ More explanations follow.
                                        :year   ,(lambda (x) (> x 1000)))))))
 #+end_src
 
-_Definition_ (time-spec): A time-spec is either a function of one
+*Definition* (time-spec): A time-spec is either a function of one
 variable or a plist. If it is a function, it must be a function
 with one variable, whose value would be interpreted as a
 universal time. If it is a plist, each of its keys must either be
 =:second=, =:minute=, =:hour=, =:date=, =:month=, =:year=, or =:day=; and each
 of its values must be a *generalized-type*.
 
-_Definition_ (generalized-type): A generalized type is either NIL,
+*Definition* (generalized-type): A generalized type is either NIL,
 a CL's type specification, an integer, a list of integers, a
 function with one variable, or a list with at least one symbol
 being =_=. The semantics of generalized-type is given in the
