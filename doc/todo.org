@@ -1,7 +1,3 @@
-* TODOs
-
-+ Merge dev to master (WARNING: this breaks API).
-
 * Contributions
 
 + Implement a function that compiles usual cron-type time spec
