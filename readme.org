@@ -98,3 +98,14 @@ hacked by changing the definition of
   A. We will support this soon: the user will be able to check a
   list of times when the schedules have been called by
   =cl-schedule=.
+
++ Q. What is the relationship between v1 and v2?
+
+  A. v2 is a complete rewrite of v1. While v1 depends on
+     =igorpikman/clon=, v2 does not. Comparing to v1, the
+     implementation of v2 uses more functions than macros. This
+     makes v2 easier to hack, and as a result v2 becomes more
+     transparent in the sense that one can more easily inspect
+     the internal state of schedules. v2 also provides a general
+     and extendable time specifying sub-language (time-spec),
+     which enables the user to specify times programmatically.
