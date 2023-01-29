@@ -1,9 +1,0 @@
-* BUGS
-
-#+begin_quote
-These symbols are not accessible in the TRIVIAL-TIMERS package:
-  (#:TIMER #:TIMER-NAME #:TIMER-SCHEDULED-P #:MAKE-TIMER
-   #:SCHEDULE-TIMER #:UNSCHEDULE-TIMER #:LIST-ALL-TIMERS)
-#+end_quote
-
-Need to update my quicklisp distribution?

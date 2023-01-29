@@ -1,0 +1,53 @@
+* Time Specification (time-spec)
+
+=cl-schedule= provides a sub-language (=time-spec=), for the user to
+specify times when a schedule must be launched.
+
+Natively, =cl-schedule= uses [[http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_u.htm#universal_time][universal time]] to describe time. The
+semantics of time-spec is given in its core function
+=#'satisfies-time-spec-p=, which takes two parameters, a universal
+time and a time-spec. To illustrate how it works and all of its
+possibilities, take a look at the following programmatic example.
+More explanations will follow.
+
+#+begin_src lisp
+(let ((utime (encode-universal-time 0 1 2 3 4 2000)))
+  (assert
+   (and (satisfies-time-spec-p utime #'evenp)
+        (satisfies-time-spec-p utime '(:second 0))
+        (satisfies-time-spec-p utime '(:second 0
+                                       :minute 1))
+        (satisfies-time-spec-p utime '(:second 0
+                                       :minute 1
+                                       :hour   2))
+        (satisfies-time-spec-p utime '(:second 0
+                                       :minute 1
+                                       :hour   2
+                                       :date   3
+                                       :month  4
+                                       :year   2000))
+        (satisfies-time-spec-p utime `(:second (0 1 2)                  ; a list of integers
+                                       :minute (< 0 _ 2)                ; a list with at least one _
+                                       :hour   (satisfies evenp)        ; CL type specifier
+                                       :day    ()                       ; NIL means no restrictions
+                                       :month  4                        ; an integer
+                                       :year   ,(lambda (x) (> x 1000)) ; a function
+                                       )))))
+#+end_src
+
+*Definition* (time-spec): A time-spec is either a function of one
+variable or a plist. If it is a function, it must be a function
+with one variable, whose value would be interpreted as a
+universal time. If it is a plist, each of its keys must either be
+=:second=, =:minute=, =:hour=, =:date=, =:month=, =:year=, or =:day=; and each
+of its values must be a *generalized-type*.
+
+*Definition* (generalized-type): A generalized type is either NIL,
+a CL's type specification, an integer, a list of integers, a
+function with one variable, or a list with at least one symbol
+being =_=. The semantics of generalized-type is given in the
+function =#'satisfies-generalized-type-p=.
+
+To observe time-spec works in reality, use the function =dry-run=
+that generates the next few times that satisfy a given time spec.
+More examples can be found in =doc/examples.org=.

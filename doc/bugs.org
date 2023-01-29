@@ -1,0 +1,6 @@
+* BUGS
+
++ Pressure Test: I observed that sometimes some schedules were
+  skipped when there are too many cases! Not sure if it is
+  because of =log4cl=. Pressure test it by firing many schedules
+  that run on each second.
