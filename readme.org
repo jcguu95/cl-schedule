@@ -10,6 +10,12 @@ your local-projects directory, and evaluate the form in Lisp:
 (ql:quickload :cl-schedule)
 #+end_src
 
+To run the test cases, evaluate the form
+
+#+begin_src lisp
+(ql:quickload :cl-schedule.test)
+#+end_src
+
 ** 2. Examples
 
 To run a function every minute
