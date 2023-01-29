@@ -29,10 +29,12 @@
                            :time time)))
 
 (defmethod unschedule! ((schedule schedule))
+  (reset-global-scheduler)
   (setf *schedules*
         (remove schedule *schedules*)))
 
 (defmethod unschedule! ((pred function))
+  (reset-global-scheduler)
   (setf *schedules*
         (remove-if pred *schedules*)))
 

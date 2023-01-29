@@ -1,7 +1,5 @@
 * TODOs
 
-+ Handle errors from schedules and prevent one failure from
-  blocking others.
 + Write unit tests for time-spec.
 + Merge dev to master (WARNING: this breaks API).
 

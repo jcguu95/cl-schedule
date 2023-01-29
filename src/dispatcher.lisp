@@ -18,9 +18,17 @@ superficially by thread names."
       (log:debug "Dispatching..")
       (loop for schedule in (gethash now *actions*)
             do (pop (gethash now *actions*))
+               ;; (when (enabled schedule)
+               ;;   (funcall (func schedule)))
                (when (enabled schedule)
-                 (funcall (func schedule)))))))
-
+                 (let ((function (func schedule)))
+                   (handler-case (funcall function)
+                     (error (condition)
+                       (format t "~%<CL-SCHEDULE> ~a
+A schedule raises an unhandled condition:
+  schedule: ~a
+  condition: ~a
+" (local-time:now) schedule condition)))))))))
 
 (defun reset-global-dispatcher ()
   (mapc #'bt:destroy-thread (global-dispatchers))
