@@ -16,3 +16,4 @@
 + Implement test cases for the runtime. Currently, we only have
   test cases for the static parts of the system (e.g. time-spec,
   static schedules).
++ Resolve or come up with ideas for bugs in =doc/bugs.org=.
