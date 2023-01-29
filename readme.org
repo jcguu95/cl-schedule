@@ -25,11 +25,11 @@ A more complicated time-spec that replicates =*/25 5-6,10 4 7 1-3=
 (cron-style) is
 
 #+begin_src lisp
-(defun m-of-25-p (n) (= 0 (mod n 25)))
+(defun 25-multi (n) (= 0 (mod n 25)))
 
 (schedule! :func #'hello
            :time '(:second 0
-                   :minute (satisfies m-of-25-p)
+                   :minute (satisfies 25-multi)
                    :hour   (or (integer 5 6)
                                (member 10))
                    :date   4
