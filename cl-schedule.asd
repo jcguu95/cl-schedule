@@ -6,7 +6,7 @@
   :author ("Gábor Melis <mega@retes.hu>"
            "Jin-Cheng Guu <jcguu95@gmail.com>")
   :license "MIT"
-  :version "0.0.6"
+  :version "1.0.0"
   :components ((:module "src"
                 :components ((:file "package")
                              (:file "user")
