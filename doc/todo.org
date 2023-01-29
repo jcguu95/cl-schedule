@@ -1,18 +1,16 @@
 * TODOs
 
-+ Separate time-spec to an independent system:
-  + Write a dedicated doc (with programmatic tests) for time-spec.
-  + Allow =:mon= =:tue= =:wed= .. =:sun= in our time-spec.
 + Handle errors from schedules and prevent one failure from
   blocking others.
-+ Write a doc for developers about how =cl-schedule= is implemented
-  (e.g. its scheduler and dispatcher).
++ Write unit tests for time-spec.
 + Merge dev to master (WARNING: this breaks API).
 
-* Help Wanted
+* Contributions
 
 + Implement a function that compiles usual cron-type time spec
   (e.g. =0 * * * *=) to a time spec defined in this project.
++ Allow =:mon= =:tue= =:wed= .. =:sun= in our time-spec. Document this
+  new feature.
 + Implement test cases for the runtime. Currently, we only have
   test cases for the static parts of the system (e.g. time-spec,
   static schedules).

@@ -47,3 +47,7 @@ a CL's type specification, an integer, a list of integers, a
 function with one variable, or a list with at least one symbol
 being =_=. The semantics of generalized-type is given in the
 function =#'satisfies-generalized-type-p=.
+
+To observe time-spec works in reality, use the function =dry-run=
+that generates the next few times that satisfy a given time spec.
+More examples can be found in =doc/examples.org=.
