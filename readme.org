@@ -1,8 +1,5 @@
 * cl-schedule (v2): a scheduling library in CL
 
-A schedule is a function with a time spec. =cl-schedule= calls
-the function according to its time spec.
-
 ** 1. Installation & Usage
 
 While the older version (v1) is on Quicklisp, the current version
