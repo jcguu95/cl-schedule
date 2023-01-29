@@ -72,9 +72,12 @@ schedule each schedule in the list =*schedules*= to the hash table
 time, and has each of its values being a list of schedules. The
 dispatcher wakes up every second, checks the current universal
 time, and make a function call to the function of each of the
-enabled schedules stored in the corresponding list. Any condition
-is automatically passed and with some information printed to
-=*standard-output*=.
+enabled schedules stored in the corresponding list.
+
+By default, any condition is automatically passed and with some
+information printed to =*standard-output*=. The handler can be
+hacked by changing the definition of
+=#'wrap-with-simple-condition-handler=.
 
 ** 4. FAQ
 
