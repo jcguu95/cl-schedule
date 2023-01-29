@@ -8,6 +8,7 @@ your local-projects directory, and evaluate the form in Lisp:
 
 #+begin_src lisp
 (ql:quickload :cl-schedule)
+(in-package :cl-schedule)
 #+end_src
 
 To run the test cases, evaluate the form
@@ -44,9 +45,13 @@ A more complicated time-spec that replicates =*/25 5-6,10 4 7 1-3=
                    :day    (integer 0 2)))
 #+end_src
 
-A handy function is =#'dry-run=, which shows you all universal
-times (within a specified time range) that satisfy the time-spec.
-For example,
+The symbols =satisfies=, =or=, =integer=, =member=.. are keywords in the
+domain specific language of CL's type system. More generally, our
+time-spec extends that language.
+
+When a time-spec is too complicated, a handy function to rescue
+is =#'dry-run=, which shows you all universal times (within a
+specified time range) that satisfy the time-spec. For example,
 
 #+begin_src lisp
 (assert
