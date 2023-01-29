@@ -12,12 +12,10 @@ your local-projects directory, and evaluate the form in Lisp:
 
 ** 2. Examples
 
-To run a function every second
+To run a function every minute
 
 #+begin_src lisp
-(defun hello! ()
-  (format t "Hello!")
-  (terpri))
+(defun hello! () (format t "Hello!") (terpri))
 
 (schedule!
  :func #'hello!
@@ -31,7 +29,7 @@ A more complicated time-spec that replicates =*/25 5-6,10 4 7 1-3=
 (defun m-of-25-p (n) (eql 0 (mod n 25)))
 
 (schedule!
- :func (lambda () (format t "Hello!"))
+ :func (lambda () (format t "Hello!") (terpri))
  :time '(:minute (satisfies m-of-25-p)
          :hour (or (integer 5 6)
                    (member 10))
@@ -47,7 +45,7 @@ For example,
 #+begin_src lisp
 (assert
  (equal- (mapcar #'local-time:universal-to-timestamp
-                 (dry-run '(:second 0
+                 (dry-run '(:second 0 ; time-spec
                             :minute 0
                             :hour   (8 20))
                           :init '(2020 1 1 12 59 59)
@@ -60,9 +58,9 @@ For example,
            @2020-01-04T08:00:00.000000+08:00)))
 #+end_src
 
-We support very general time-spec. For details, please refer to
-=doc/time-spec.org=. More examples for =#'schedule!= can be found in
-=doc/examples.org=.
+We support very general time-specs (e.g. any function). For
+details, please refer to =doc/time-spec.org=. More examples for
+=#'schedule!= can be found in =doc/examples.org=.
 
 ** 3. How it works under the hood
 
@@ -77,6 +75,10 @@ list.
 
 ** 4. FAQ
 
++ Q. How to contribute?
+
+  A. Please refer to =doc/todo.org=.
+
 + Q. What if a schedule is missed? For example, perhaps the OS is
   asleep when a schedule is meant to be run?
 
@@ -90,7 +92,3 @@ list.
   A. We will support this soon: the user will be able to check a
   list of times when the schedules have been called by
   =cl-schedule=.
-
-+ Q. How to I contribute?
-
-  A. Please refer to =doc/todo.org=.
