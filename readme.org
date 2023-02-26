@@ -2,9 +2,10 @@
 
 ** 1. Installation & Usage
 
-While the older version (v1) is on Quicklisp, the current version
-(v2) may not be there yet. To use this program, download it to
-your local-projects directory, and evaluate the form in Lisp:
+Although the older version (v1) is available on Quicklisp, the
+current version (v2) may not yet be listed. To use this program,
+download it to your local-projects directory and evaluate the
+form in Lisp:
 
 #+begin_src lisp
 (ql:quickload :cl-schedule)
@@ -46,13 +47,16 @@ A more complicated time-spec that replicates =*/25 5-6,10 4 7 1-3=
                    :day    (integer 0 2)))
 #+end_src
 
-The symbols =satisfies=, =or=, =integer=, =member=.. are keywords in the
-domain specific language of CL's type system. More generally, our
-time-spec extends that language.
+The keywords =satisfies=, =or=, =integer=, and =member= are integral
+components of Common Lisp's type system domain-specific language.
+Our time-spec language extends this functionality to support a
+broader range of use cases.
 
-When a time-spec is too complicated, a handy function to rescue
-is =#'dry-run=, which shows you all universal times (within a
-specified time range) that satisfy the time-spec. For example,
+If a time-spec becomes too complex, you can use the =#'dry-run=
+function to obtain a list of all universal times that satisfy the
+specified time range. This utility can be invaluable when
+debugging or testing the behavior of your program. For instance,
+consider the following example:
 
 #+begin_src lisp
 (assert
@@ -77,47 +81,47 @@ details, please refer to =doc/time-spec.org=. More examples for
 
 ** 3. How it works under the hood
 
-There are two threads running in the background, the scheduler
-and the dispatcher. The scheduler wakes up every few seconds, and
-schedule each schedule in the list =*schedules*= to the hash table
-=*actions*=. This hash table has each of its keys being a universal
-time, and has each of its values being a list of schedules. The
-dispatcher wakes up every second, checks the current universal
-time, and make a function call to the function of each of the
-enabled schedules stored in the corresponding list.
+The system includes two background threads: the scheduler and the
+dispatcher. The scheduler periodically wakes up and schedules
+each task in the =*schedules*= list to the =*actions*= hash table.
+This hash table uses universal time as keys and stores lists of
+schedules as values. Meanwhile, the dispatcher wakes up every
+second to check the current universal time and invoke the
+function associated with each enabled schedule stored in the
+corresponding list.
 
-By default, any condition is automatically passed and with some
-information printed to =*standard-output*=. The handler can be
-hacked by changing the definition of
-=#'wrap-with-simple-condition-handler=.
+By default, any conditions are automatically passed and relevant
+information is printed to =*standard-output*=. However, the
+behavior of the system can be modified by adjusting the
+definition of the =#'wrap-with-simple-condition-handler= function.
 
 ** 4. FAQ
 
-+ Q. How to contribute?
++ Q: How can I contribute?
 
-  A. Please refer to =doc/todo.org=.
++ A: To make a contribution, please refer to the documentation at
+  =doc/todo.org=.
 
-+ Q. What if a schedule is missed? For example, perhaps the OS is
-  asleep when a schedule is meant to be run?
++ Q: What happens if a schedule is missed, such as when the
+  operating system is in sleep mode during a scheduled task?
 
-  A. =cl-schedule= does not support re-running or checking the
-  schedule. However, it should not be hard to achieve by
-  providing functions that remember some information by
-  themselves.
++ A: The =cl-schedule= library does not have built-in support for
+  re-running missed schedules or checking the schedule's status.
+  However, it should be possible to achieve this functionality by
+  implementing functions that remember relevant information.
 
-+ Q. How to check the history of schedule?
++ Q: Is it possible to view the schedule's history?
 
-  A. We will support this soon: the user will be able to check a
-  list of times when the schedules have been called by
++ A: We are currently working on adding this feature. Soon, users
+  will be able to view a list of past schedule calls made by
   =cl-schedule=.
 
-+ Q. What is the relationship between v1 and v2?
++ Q: What is the relationship between v1 and v2?
 
-  A. v2 is a complete rewrite of v1. While v1 depends on
-     =igorpikman/clon=, v2 does not. Comparing to v1, the
-     implementation of v2 uses more functions than macros. This
-     makes v2 easier to hack, and as a result v2 becomes more
-     transparent in the sense that one can more easily inspect
-     the internal state of schedules. v2 also provides a general
-     and extendable time specifying sub-language (time-spec),
-     which enables the user to specify times programmatically.
++ A: Version 2 of =cl-schedule= is a complete rewrite of version 1.
+  Unlike v1, which relied on =igorpikman/clon=, v2 is independent
+  of any external dependencies. Additionally, v2 uses more
+  functions than macros, making it more transparent and easier to
+  inspect. V2 also provides a flexible sub-language for
+  specifying times (time-spec), which enables users to
+  programmatically define schedules with greater precision.
