@@ -18,6 +18,4 @@
                              ;; (:file "test")
                              )))
   :serial t
-  :depends-on (:bordeaux-threads :local-time))
-
-(local-time:enable-read-macros)
+  :depends-on (:bordeaux-threads :log4cl :local-time))
